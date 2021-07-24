@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="keywords" content=" ">
+		<meta name="description" content="">
+		<title>这是一个网页</title>
+		<style >
+			* {
+				margin:0;padding:0;
+				list-style:none;
+			}
+			.container{
+				width:990px;
+				height:600px;
+				margin: 20px auto 0px;
+				overflow:hidden;
+			}
+			ul{
+				display:flex;
+				width:3960px;
+				height:600px;
+				transition:0.7s linear;
+			}	
+			ul > li{
+				width:990px;
+				height:600px;
+			}
+			.bt{
+			    display:flex;
+				justify-content:center;
+				width:1000px;
+				margin:15px auto;
+			}
+			.bt > button{
+				margin:5px 15px;
+				text-align:center;
+				color:#58a;
+				border-radius:5px;
+				outline:none;
+				border:2px solid #58a;
+				cursor:pointer;
+			}
+			.bd{
+				background-color:hotpink;
+			}
+			.item{
+				padding:5px 5px;
+			}
+		</style>
+	</head>
+	<body>
+	<div class="container">
+		<ul>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+		</ul>
+	</div>
+	<div class="bt" id="item">
+		<button class="item">点击第一张照片</button>
+		<button class="item"> 点击第二张照片</button>
+		<button class="item">点击第三张照片</button>
+		<button class="item">点击第四张照片</button>
+	</div>
+	<script type="text/javascript">
+	var onck = document.querySelectorAll('.bt > button')//获取所有的元素
+		li = document.querySelectorAll('.container > ul > li')
+		ul = document.querySelector('.container > ul '),
+		length = li.length//获取数组的长度
+		length_onck = onck.length
+	ul.style.width =length * 990 +'px'
+	for(var k = 0;k < length;k++){
+		li[k].style.cssText = 'background:url(./images/beauty'+k+'.jpg) no-repeat center/cover'//动态插入图片
+	}
+	for(var i = 0;i < length;i++){
+		function halndle(j){
+			onck[j].onclick = function somefn(){
+				ul.style.cssText='transform:translate('+j * -990+'px);'
+				this.classList.add('bd');
+				re(this)
+			}
+		}
+		 halndle(i)
+	}
+	function re(ele){
+		for( var item of onck ){
+			if(ele === item){
+				continue
+			}
+			item.classList.remove('bd');
+		}
+	}
+	</script>
+</html>

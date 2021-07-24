@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="keywords" content=" ">
+		<meta name="description" content="">
+		<title>这是一个网页</title>
+		<style >
+			* {
+				margin:0;padding:0;
+				list-style:none;
+				}
+			.container{
+				display:flex;
+				justify-content:center;
+				width:100%;
+				height:650px;
+			}
+			ul{
+				position:relative;
+				margin: 40px auto 0px;
+				width:990px;
+				height:600px;
+				overflow:hidden;
+			}	
+			ul > li{
+				position:absolute;
+				width:990px;
+				height:600px;
+				background:url("./images/beauty0.jpg") no-repeat center /990px 600px;
+				overflow:hidden;
+			}
+			ul > li:nth-child(1){
+				left:0;
+			}
+			ul > li:nth-child(2){
+				left:990px;
+				background:url("./images/beauty1.jpg") no-repeat center /990px 600px;
+			}
+			ul > li:nth-child(3){
+				left:1980px;
+				background:url("./images/beauty2.jpg") no-repeat center /990px 600px;
+			}
+			ul > li:nth-child(4){
+				left:2970px;
+				background:url("./images/beauty3.jpg") no-repeat center /990px 600px;
+			}
+			.bt{
+			    display:flex;
+				justify-content:center;
+				width:1000px;
+				margin:15px auto;
+			}
+			.bt > button{
+				width:100px;
+				margin:5px 15px;
+				text-align:center;
+				color:#58a;
+				border-radius:5px;
+				outline:none;
+				border:2px solid #58a;
+			}
+			.bd{
+				background-color:hotpink;
+			}
+		</style>
+	</head>
+	<body>
+	<div class="container">
+		<ul>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+		</ul>
+	</div>
+	<div class="bt" id="item">
+		<button class="item">点击第一张照片</button>
+		<button class="item"> 点击第二张照片</button>
+		<button class="item">点击第三张照片</button>
+		<button class="item">点击第四张照片</button>
+	</div>
+	<div class="first"></div>
+	</body>
+	<script type="text/javascript">
+	var onck = document.querySelectorAll('.bt > button'),
+		li = document.querySelectorAll('.container > ul > li'),
+		length = li.length
+	var first = document.querySelector('.first')
+	first.classList.add('three')
+	for(var k = 0;k < length;k++){
+		console.log(onck[k])
+	}
+	console.log(onck[k])
+	console.log(first.classList)
+	for(var i = 0;i < length;i++){
+		(function (j){
+			onck[j].onclick = function somefn(){
+				if( j == 0 ){
+					li[j].style.cssText='transform:translate(0px);transition:0.7s;'
+					li[j+1].style.cssText='transform:translate(0px);transition:0.7s;'
+					li[j+2].style.cssText='transform:translate(0px);transition:0.7s;'
+					li[j+3].style.cssText='transform:translate(0px);transition:0.7s;'
+					onck[j].classList.add('bd')
+					onck[j+1].classList.remove('bd')
+					onck[j+2].classList.remove('bd')
+					onck[j+3].classList.remove('bd')
+				}else if( j==1 ){
+					li[j].style.cssText='transform:translate(-990px);transition:0.7s;'
+					li[j+1].style.cssText='transform:translate(0px);transition:0.7s;'
+					li[j+2].style.cssText='transform:translate(0px);transition:0.7s;'
+					onck[j-1].classList.remove('bd')
+					onck[j].classList.add('bd')
+					onck[j+1].classList.remove('bd')
+					onck[j+2].classList.remove('bd')
+				}else if( j==2) {
+					li[j].style.cssText='transform:translate(-1980px);transition:0.7s;'
+					li[j+1].style.cssText='transform:translate(0px);transition:0.7s;'
+					onck[j-2].classList.remove('bd')
+					onck[j-1].classList.remove('bd')
+					onck[j].classList.add('bd')
+					onck[j+1].classList.remove('bd')
+				}else{
+					li[j].style.cssText='transform:translate(-2970px);transition:0.7s;'
+					onck[j-3].classList.remove('bd')
+					onck[j-2].classList.remove('bd')
+					onck[j-1].classList.remove('bd')
+					onck[j].classList.add('bd')
+				}
+			}
+			
+		})(i)
+	}
+	</script>
+</html>

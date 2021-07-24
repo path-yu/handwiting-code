@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+    </style>
+</head>
+<body>
+    <div id="app">
+        
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="./virtualDOM.js"></script>
+    <script>
+      
+        let vDom1 = createElement("div", {
+                class: "div",
+            }, [
+                createElement("div", {
+                    class: "div1"
+                }, ["diff之前文本"]),
+                createElement("div", {class:'black'}, [
+                    "我是原div文本"
+                ])
+            ]);
+    
+            let vDom2 = createElement("div", {
+                class: "div3",
+            }, [
+                createElement("section", {
+                    class: "div4",
+                    style:"color:blue;"
+                }, ["diff之后文xxx本", createElement('div',{},["哒哒哒哒"])  ]),
+                 createElement("span", {class:'red',data_age:'43'}, [
+                    "我是新div文本",
+                    "ddd",
+                 ])
+            ]);
+        // document.getElementById("#app").setAttribute
+        let DOODM = createDom(vDom1)
+        let patches = diff(vDom1, vDom2);
+        console.log(patches);
+        console.log(DOODM);
+        render(DOODM, document.querySelector('#app'))
+        // // console.log(crea);
+         patch(DOODM, patches)
+        /* 
+            MVVM可以很好的降低我们维护状态 -> 视图的复杂度. 但是这不是唯一的方法. 还有一个非常直观的方法
+            可以大大降低视图更新的操作,一旦状态发生了改变, 就用模板引擎重新渲染整个视图,然后用新的视图更新成旧
+            的视图
+            这么做的方法会导致很多的问题, 最大的问题就是很慢,因为即使一个小小的状态变更,都要重新构造整个DOM.性价比太低
+            而且这样做的话, input和textarea会失去原有的焦点, 最后的结论就是,对于局部小视图的更新, 没有问题,
+            但是对于大型视图,需要更新页面较多局部视图的时候,这样的做法不可取
+
+            维护状态, 更新视图
+        */
+        // 所谓的Virtual DOM算法包括几个步骤
+        /* 
+            1. 用JavaScript对象构建DOM树结构, 然后用这个树构建一个真正的DOM树 插到文档中
+            2. 当状态变更了. 重新构建提供新的对象树,然后用新的树和旧的树进行比较,记录两颗树的
+                差异
+            3. 把2所记录的差异应用到步骤一所构建的真正的DOM树,视图就更新了
+
+            virtualDOM的本质就是在js和DOM中间做了一个缓存, 可以类别CPU和硬盘, 既然硬盘可以这么慢, 我们就在
+            它们中间加个缓存, 既然DOM这么慢,我们就在js和DOM之间加个缓存, CPU(js)只操作内存(virtual) 
+            最后的时候在把变革写入硬盘DOM
+        */
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app"></div>
+    <div id="box">
+
+    </div>
+    <script src="./virtualDOM.js"></script>
+    <script>
+        //  <ul class="ul-wrap">
+        //         <li class="li-item">1</li>
+        //         <li class="li-item">2</li>
+        //         <li class="li-item">3</li>
+        //     </ul>
+        let VDOM = createElement("ul", {
+                class: "ul-wrap",
+            }, [
+                createElement("li", {
+                    class: "li-item"
+                }, ["1"]),
+                createElement("li", {
+                    class: "li-item"
+                }, ["2"]),
+                  createElement("li", {
+                    class: "li-item"
+                }, ["3"]),
+            ]);
+        let VOM1 = createElement("ul", {
+                class: "ul-wrap-box",
+        }, [
+            createElement("li", {
+                class: "li-item"
+            }, ["1"]),
+            createElement("li", {
+                class: "li-item",
+                style:'color:red'
+            }, ["2"]),
+        ]);
+        let DOM = createDom(VDOM);
+        let patches = diff(VDOM,VOM1);
+        render(DOM,document.getElementById("app"))
+        patch(DOM, patches);
+        // console.log(!!document.getElementById('box').children );
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+    <div id="app">
+        <a v-bind:href="href">链接</a>
+        <label>
+            <input type="text" v-model="student.name" value="aa" />
+            <p>{{student.name}}</p>
+        </label>
+        <img :src="url" alt="">
+        <p>{{text}}</p>
+        {{name}}
+        <div>{{href}}</div>
+        <h2>{{count}}</h2>
+        <button @click="change(2)">加加</button>
+    </div>
+    <script src="vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                name: '张三',
+                href: 'www.baidu.com',
+                text: '这是一条文本',
+                url: 'https://dss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3363295869,2467511306&fm=26&gp=0.jpg',
+                student: {
+                    name: '小明',
+                },
+                count: 0,
+                studentList: ["小明", "校长", "小红"],
+            },
+            methods: {
+                change(num) {
+                    num = Number(num);
+                    this.count+= num;
+                    this.name = "李四"
+                    this.text = "这是新文本";
+                    this.href = "https://www.bilibili.com/"
+                    this.url = "https://dss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1819216937,2118754409&fm=26&gp=0.jpg"
+                },
+            }
+        });
+        // vm.student.name = "新名字";
+        // vm.href = "www.ayun.cool";
+        // vm.name="哒哒哒45454545哒";
+        // console.log(vm);
+        // let obj = {
+        //     name: '张三',
+        //     href: 'www.baidu.com',
+        //     text: '这是一条文本',
+        //     url: 'https://dss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3363295869,2467511306&fm=26&gp=0.jpg',
+        //     student: {
+        //         name: '小明',
+        //         list: {
+        //             age: '43',
+        //             data:{
+        //                 sge:'43'
+        //             }
+        //         },
+        //         age:'43'
+        //     },
+        //     count: 0,
+        //     studentList: ["小明", "校长", "小红"],
+        // };
+
+        // function getVal(key, data) {
+        //     return key.split('.').reduce((data, current) => {
+        //         return data[current]
+        //     }, data);
+        // }
+        // console.log(getVal('student.name',obj))
+        // function getKey(data, p, val, result) {
+        //     for (let key of Object.keys(data)) {
+        //          if (typeof data[key] === 'object') {
+        //             result = result ?  result + `.${key}` : key
+        //             return getKey(data[key], p, val, result);
+        //         }
+        //         if(result){
+        //             let oldKey = key
+        //             key = result + `.${key}`
+        //             let value = getVal(key,obj);
+        //             if(value === val && oldKey === p) return  key
+        //         }else{
+        //              let value = getVal(key, obj);
+        //             if(val == value && p === key){
+        //                 return key
+        //             }
+        //         }
+                
+        //     }
+        // }
+        // let res = getKey(obj, 'name', "小明", "")
+        // console.log(res);
+    </script>
+</body>
+
+</html>

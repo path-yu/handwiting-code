@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <style>
+        #app{
+            width: 500px;
+            height: 500px;
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+<div id='app'></div>
+
+    <script>
+        // 代理模式 为对象提供了一层代理, 用来控制这个对象的访问
+        // 通过代理过滤不必要或不允许的访问
+        // 代理模式就是通过代理访问对象而不是直接访问对象
+        let rooms = {
+            age:43,
+            roomowner:'张三',
+            sex:'男',
+        }
+        // password 验证密码 level 验证权限 isTourist 验证是否使用游客登录
+        let Fn = function ({password="",level=0, isTourist=true},target ) {
+           let handler = password === '我爱中国' ?
+                {
+                    set(target,pro,value){
+                        if(level < 2 ){
+                            throw new Error('权限过低')
+                        }else{
+                            target[pro] = value
+                            console.log(target);
+                        }
+                    },
+                    get(target,pro){
+                        return target[key]
+                    }
+            }
+            :{
+                set(target,pro,value){
+                    console.error('密码错误, 不允许设置属性');
+                    return false
+                },
+                get(target,pro){
+                    if(isTourist){
+                        return target[pro]
+                    }
+                    return "不允许访问"
+                }
+            }
+            const obj = new Proxy(rooms,handler);
+            return obj
+        }
+        // Fn 通过参数信息 限制对象 target的操作
+         let res = Fn({ password: "3633",level:3 ,isTourist: true},rooms);
+        //  res.roomowner = "434";// 密码错误 不允许设置属性
+        //  console.log(rooms);
+
+
+        // let $ = selector => document.querySelector(selector);
+        let app = document.querySelector("#app");
+    //    app.addEventListener("click",function(){
+    //         setTimeout(function(){
+    //             this.style.color = "red"
+    //         })
+    //     })
+
+        function proxy(fn,context=window,...args){
+            console.log(args);
+           if(typeof fn !== "function") throw new Error("The arguments should be  a function");
+            return  function(...reset){
+                return fn.call(context,...args.concat(reset))
+            }
+        }
+        app.addEventListener("click", function () {
+            setTimeout(proxy(function(){
+                console.log(arguments);
+            },this,4343)(43,4,34))
+        })
+        // proxy(function(){
+        //     console.log(arguments);
+        // },{name:'zhangs'},432,4,4,3)()
+    </script>
+</body>
+</html>

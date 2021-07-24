@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模式</title>
+</head>
+<body>
+    <script>
+        /* 
+            命令模式, 将请求和属性解构并封装成独立对象, 从而使不同的请求
+            对客户端的实现参数化
+
+         */
+    let cmdList = {
+        ctxDiv(width=400,height=400,backgroundColor='#ccc'){
+            let div = document.createElement('div');
+            div.style.width = width +'px';
+            div.style.height = height + 'px';
+            div.style.backgroundColor = backgroundColor
+            document.body.append(div)
+        },
+        ctxA(href, text){
+            let a = document.createElement('a');
+            a.href = href;
+            a.textContent = text
+            document.body.append(a)
+        },
+        ctxP(text,color="#f46"){
+            let p = document.createElement('p');
+            p.textContent = text;
+            p.style.color = color
+            document.body.append(p)
+        },
+        // 执行命令
+        execute(data=[]){
+            data.forEach(item => {
+                let { command,params} = item;
+                cmdList[command] &&  cmdList[command](...params)
+            })
+        },
+        addCmd(key,action){
+            command[key] = action
+        },
+        removeCmd(key){
+            Reflect.deleteProperty(cmdList, key)
+        }
+    };
+    // cmdList.removeCmd("ctxA")
+    cmdList.execute([
+      {command:'ctxDiv',params:["200","200","red"]},
+      {command: 'ctxA', params: ["www.baidu.com", "百度云"] },
+        { command: 'ctxP', params: ["这是一条文本","red"] }
+    ])
+    let element = <h1></h1>;
+    console.log(element)
+    </script>
+</body>
+</html>

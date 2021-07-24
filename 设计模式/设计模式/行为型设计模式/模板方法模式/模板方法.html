@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <style>
+    </style>
+</head>
+<body>
+<div id='app'>
+
+</div>
+
+    <script>
+        // 父类定义一组操作算法的骨架,而将一些实现步骤延迟到子类, 使得子类可以不改变父类的
+        // 算法结构是可以重写定义算法中某些实现步骤
+        /* 
+            主要解决: 一些方法通用, 却在每一个子类都重写这一方法
+            何时使用: 有一些通用的方法
+            如何解决: 将这些通用算法抽象出来
+            应用实例:在造房子的时候,地基,走线和水管都一样, 只有在建筑的后期才有加壁橱加栅栏等差异
+            优点: 封装不变部分,扩展可变部分, 提取公共代码,便于维护, 行为由父类控制,子类实现
+         */
+
+         /* 
+            泡咖啡	泡茶
+            烧开水	烧开水
+            用沸水泡咖啡	用沸水浸泡茶叶
+            倒入杯子	倒入杯子
+            加糖和牛奶	加柠檬
+          */
+          // 把泡咖啡和泡茶的共同点抽出来
+        class Beverage{
+            boilWater(){
+                console.log("把水煮沸");
+            }
+            brew(){} // 泡饮料或者 咖啡
+            pourInCup(){}// 倒入杯子
+            addCondiments(){}// 加入调料
+            init(){
+                this.boilWater();
+                this.brew();
+                this.pourInCup();
+                this.addCondiments()
+            }
+        }
+        // 继承父类的模板, 通用部分不动, 特殊的地方重写父类的方法
+        class Tea extends Beverage{
+            brew() { 
+                console.log("用沸水浸泡茶叶");
+            } // 泡饮料或者 咖啡
+            pourInCup() {
+                console.log('把茶倒入杯子');
+             }// 倒入杯子
+            addCondiments() {
+                console.log('加柠檬');
+             }// 加入调料
+        }
+        new Tea().init()
+        /* 
+            1. 把水煮沸,
+            2. 用沸水冲泡饮料
+            3. 吧饮料倒进杯子
+            4. 加调料
+         */
+        /* 
+            上面是一般的冲调饮料的流程，但是可能会有特殊情况，
+            比如有的人可能不会加调料。遇到这种情况需要使用钩子方法来在隔离有变化的步骤
+         */
+
+
+         class newBeverage{
+             boilWater() {
+                 console.log("把水煮沸");
+             }
+             brew() { 
+                 throw new Error('子类必须重写brew方法')
+             } // 泡饮料或者 咖啡
+             pourInCup() {
+                 throw new Error('子类必须重写pourInCup方法')
+              }// 倒入杯子
+             addCondiments() { // 加入调料
+                  throw new Error('子类必须重写paddCondiments方法')
+             }
+             customerWantsCondiments (){
+                 return true // 默认需要调料
+             }
+             init() {
+                 this.boilWater();
+                 this.brew();
+                 this.pourInCup();
+                 //如果钩子返回了true, 则需要调料
+                 if(this.customerWantsCondiments()){
+                     this.addCondiments()// 第四步成为了可选方法
+                 }
+             }
+         }
+    </script>
+</body>
+</html>

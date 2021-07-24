@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html llang='zh-cn'>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <p></p>
+    <button id="btn">send</button>
+    <script>
+        let btn = document.querySelector('#btn');
+        let request = function (key) {
+            // 缓存数据
+            let cache = {};
+            return async function () {
+                //如果缓存里面没有数据, 发送请求成功后处理数据并放入数据
+                if (!cache[key]) {
+                    const response = await fetch('http://localhost:3000/goods'),
+                        data = await response.json();
+                    // 处理数据
+                    result(data)
+                    //缓存数据
+                    cache[key] = data;
+                } else {
+                    // 当缓存中有数据 直接处理
+                    result(cache[key])
+                }
+            }
+        }
+
+        function result(data) {}
+        btn.onclick = request(1)
+
+
+        // 迭代器模式
+        let list = document.getElementsByTagName('p');
+        // list.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator]();
+        // let list = document.getElementsByTagName('p');
+        [...list].forEach(item => {
+            console.log(item)
+        });
+        console.log(list instanceof HTMLCollection)
+        Array.prototype.forEach = function (callback) {
+            for (let i = 0, len = this.length; i < len; i++) {
+                callback(this[i], i, this)
+            }
+        }
+        let arr = [34, 5, 545];
+        let iterator = arr[Symbol.iterator]();
+        // console.log(iterator.next())
+        // // {value:34, done:false}
+        // console.log(iterator.next())
+        // // {value:5, done:false}
+        // console.log(iterator.next())
+        // // {value:545, done:false}
+        // console.log(iterator.next())
+        // {value:undefined, done:true}
+        let a = [34, 34, 5, 65, 6];
+        Array.prototype.each = function (callback) {
+            let arrIterator = this[Symbol.iterator]();
+            done = arrIterator.next().done
+            while (!done) {
+                done = arrIterator.next().done
+                console.log(arrIterator.next().value)
+            }
+        }
+        a.each()
+        let Iterator = function (arr) {
+            let index = 0,
+                length = arr.length;
+            return {
+                next() {
+                    return res = index > length ?
+                        {
+                            value: undefined,
+                            done: true
+                        } :
+                        {
+                            value: arr[index++],
+                            done: false
+                        }
+                }
+            }
+        }
+
+        function MyIterator(arr) {
+            let currentIndex = 0,
+                length = arr.length;
+            return {
+                next() {
+                    return currentIndex > length
+                        ? { value: undefined, done: true } 
+                        : { value: arr[currentIndex++], done: false };
+                }
+            }
+        }
+        let b = MyIterator(arr);
+        console.log(b.next())
+        console.log(b.next())
+        console.log(b.next())
+        console.log(b.next())
+        let iterator = MyIterator([3, 4, 5, 6]),
+            isdone = MyIterator.next().done;
+        while(!isdone){
+            isdone = MyIterator.next().done;
+            console.log(MyIterator.next())
+        }
+    </script>
+</body>
+
+</html>

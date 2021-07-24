@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <style>
+        #app{
+            width: 250px;
+            height: 250px;
+            background-color: red;
+        }
+        .wrap{
+            width: 200px;
+            height: 200px;
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+<div id='app'></div>
+<div class="wrap"></div>
+    	<script src='https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+    <script>
+        /* 
+            什么是桥接模式?
+            将抽象部分和它的实现分离, 使他们都可以独立的变化
+        */
+        const app = document.getElementById('app');
+        function addEvent(ele,eventName,eventFn){
+            ele.addEventListener(eventName, eventFn,false)
+        }
+        addEvent(app,'click',clickApp);
+        function getFetch(url,id,callback){
+            fetch(`${url}?id=${id}`,{method:'get'})
+                .then(res => res.json())
+                .then(res => callback(res))
+        }
+        getFetch('http://localhost:3001/teacher',1,res =>{
+            console.log(res);
+        })
+        function ajax(type,url,callback){
+            $.ajax({
+                url,
+                type,
+                success(res){
+                   callback(res)
+                },
+               
+            })
+        }
+        function clickApp(){
+           ajax('get','http://localhost:3001/api?id='+this.id,function(){})
+
+        // 这就是桥接器, 我们通过getData调用触发ajax请求函数, 此时代码变得更加简洁, 更加优雅
+           getData(this.id,res =>{
+               console.log(res);
+           })
+        }
+        let wrap = document.querySelector('.wrap');
+        addEvent(wrap, 'click', clickWrap);
+        function clickWrap(){
+            // 发送ajax 请求
+            getData(this.name,res =>{
+                console.log(res);
+            })
+        }
+        // 上面的clickApp是一个纯事件函数,内部涉及到了this指向问题,调用起来局限性很大
+        // 如果你要单独的去某些id值的返回,你需要写个点击事件,或改变this的执行,特别麻烦
+        // 对于开发者而言, 这不是一个好api, 因为局限性太大了,我们可以使用桥接模式,将它们分离
+
+        // 直接传入id,场景的关联性更小, 适用性更大,
+        function getData(id,callback){
+            ajax('get', 'http://localhost:3001/login?id=' + id, function (res) {
+                callback(res)
+             })
+        }
+        /* 
+            上面的代码我们将发送ajax请求的部分抽象出来, 方便我们测试和扩展
+        */
+       async function get(){
+          const data  =  await $.ajax({
+                url:'http://localhost:3001/teacher',
+                type:'get',
+                // async:true // 同步加载
+            })
+            console.log(111);
+            console.log(data);
+        }
+        get()
+        //什么情况下用到桥接模式, 某些逻辑需要扩展或者其他不希望和实现结构复杂是,可以单独抽象出来
+        // 在桥接使用, 而抽象部分和实现部分也可以单独进行扩展
+        function forEach(arr=[],callback=()=>{},thisValue= arr){
+            if(typeof callback !== "function" || !Array.isArray(arr)) return;
+            for(let i = 0,len = arr.length;i < len; i++){
+                callback.call(thisValue, arr[i], i, arr);
+            }
+        }
+        forEach([1,2,3],function(v,i,arr){
+            console.log(v,this);
+        },{name:"Age"})
+      let arr = [34,3,43,4,54];
+      arr.forEach(function(){
+          console.log(this);
+      },arr)
+    </script>
+</body>
+</html>

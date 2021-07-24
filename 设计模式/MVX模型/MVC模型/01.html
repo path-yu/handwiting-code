@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="Zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body{font-family: "Microsoft YaHei",serif;}
+        body,dl,dd,p,h1,h2,h3,h4,h5,h6{margin:0;}
+        ol,ul,li{margin:0;padding:0;list-style:none;}
+        img{border:none;}
+
+        p{
+            margin: 20px 10px;
+        }
+        span{
+            color: red;
+            font-weight: bolder;
+        }
+    </style>
+</head>
+<body>
+
+    <h3>我张三今天要吃苹果！</h3>
+    <p class="buy">
+        买：
+        <input type="button" value="买个苹果">
+        <input type="button" value="买个梨子">
+    </p>
+    <p class="eat">
+        吃：
+        <input type="button" value="吃个苹果">
+        <input type="button" value="吃个梨子">
+    </p>
+    <p class="count">
+        <b>张三</b>还剩：<span>0</span>个苹果，<span>0</span>个梨子
+    </p>
+    <p class="total">
+        <b>朱雀雀</b>总共还剩：<span>0</span>个水果。
+    </p>
+    <div class="box"></div>
+<script>
+    let aButBuy = document.querySelectorAll('.buy input'),
+        aButEat = document.querySelectorAll('.eat input'),
+        aSpanCount = document.querySelectorAll('.count span'),
+        totalSpan = document.querySelector('.total span'),
+        numArr = [0,0];// 分别对应苹果和梨子的个数
+    function updateView(target,data){
+        target.textContent = data;
+        totalSpan.textContent = numArr.reduce((total,cur) => total + cur).toString()
+    }
+    aButBuy.forEach((item,index) =>{
+        item.onclick = function(){
+            dataModel(true,index);
+            updateView(aSpanCount[index],numArr[index])
+        }
+    });
+    aButEat.forEach((item,index) =>{
+        item.onclick = function () {
+            dataModel(false,index);
+            updateView(aSpanCount[index],numArr[index])
+        }
+    });
+    function dataModel(bool,index){
+       if(bool){
+           numArr[index] === 20 ? alert('只能吃20个') :'';
+           numArr[index] = Math.min(20,++numArr[index]);
+       }else{
+           numArr[index] === 0 ? alert('都没了还吃') :'';
+           numArr[index] = Math.max(0,--numArr[index]);
+       }
+    }
+</script>
+</body>
+</html>

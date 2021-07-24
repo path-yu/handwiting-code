@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<script>
+
+const HashTable = (function(){
+      let symbol = Symbol();
+   function HashCode(key) {
+        if (typeof key === "number") return key
+        if (typeof key !== "string") throw TypeError('key error');
+        let hash = 0;//保存对应的每个字符ASCII码值之和
+        // 遍历每个字符的并将其ASCII码值累加
+        for (let i = 0, len = key.length; i < len; i++) {
+            hash += key.charCodeAt(i);
+        };
+        return hash % 37;
+    }
+    class Valuepair{
+        constructor(key,value){
+            this.key = key;
+            this.value = value;
+        }
+    }
+    return class{
+        constructor(){
+        
+            this[symbol]= [];
+        }
+        put(key,value){
+            if(key !== null && value !== null){
+                const position = HashCode(key);
+                if(!this[symbol][position]){
+                    this[symbol][position] = new Valuepair(key,value);
+                }else{
+                    let index = position + 1;
+                    while(this[symbol][index]){
+                        index++;
+                        console.log(index)
+                    }
+                    this[symbol][index] = new Valuepair(key,value);
+                    return true
+                }
+            } 
+            return false
+        }
+        get(key){
+            const position = HashCode(key);
+            if (this[symbol][position] !== null) {
+                if (this[symbol][position].key === key) {
+                    return this[symbol][position].value
+                } else {
+                    let index = position + 1;
+                    while (this[symbol][index] !== null && this[symbol][index].key !== key) {
+                        index++;
+                    }
+                    return this[symbol][index].value
+                }
+            }
+            return undefined
+        }
+        remove(key){
+            const position = HashCode(key);
+            if(this[symbol][position]) {
+              if(this[symbol][position].key === key){
+                 this[symbol].splice(position, 1)
+              }
+              let index = position + 1;
+              while(this[symbol][index] && this[symbol][index].key !== key){
+                  index++
+              }
+              this[symbol].splice(index,1)
+              return true
+            }
+            return false
+        }
+    }
+})()
+let map = new HashTable();
+map.put('jack',"jadaddd");
+map.put('jakc',"432432434")
+console.log(map.get('jakc'));
+map.remove("jakc");
+    map.remove("jack");
+console.log(map)
+    function toStrFn(key) {
+        if (key === null) {
+            return 'Null'
+        } else if (key === undefined) {
+            return 'UNDEFIEND'
+        } else if (typeof key === 'string' || key instanceof String) {
+            return `${key}`
+        }else if(typeof key === "object"){
+            return JSON.stringify(key)
+        }
+        return key.toSting()
+    }
+    function djb2HashCode(key) {
+            let tableKey = toStrFn(key);
+            let hash = 5381;
+            for (let i = 0, len = tableKey.length; i < len; i++) {
+                hash = (hash * 33) + tableKey.charCodeAt(i);
+            }
+            return hash % 1013
+        }
+    console.log(djb2HashCode('jack'));
+    console.log(djb2HashCode('jakc'));
+</script>
+</body>
+</html>

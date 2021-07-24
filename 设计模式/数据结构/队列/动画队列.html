@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .box{
+            width: 200px;
+            height: 300px;
+            background: #f46;
+        }
+    </style>
+</head>
+<body>
+<div class="box"></div>
+<script>
+    // 单向队列
+    class Queue {
+        constructor() {
+            this.queue = []
+        }
+        //入队
+        enQueue(...items){
+            return items.map(item =>  {
+                this.queue.push(item);
+                return item
+            })
+        }
+        // 出队
+        deQueue(){
+            console.log(this)
+            return this.queue.shift()
+        }
+        // 返回队头
+        first(){
+            return this.queue[0];
+        }
+        //清空队列
+        clear(){
+            this.queue = [];
+        }
+        // 返回队列的长度
+        size(){
+            return this.queue.length;
+        }
+        //队列是否为空
+        isEmpty(){
+            return this.size() === 0
+        }
+    }
+
+    const aq = (function () {
+        // 继承Queue 实现一个当前适合需求类
+        class _Queue extends  Queue{
+            constructor(props) {
+                super(props);
+                // 保存动画是否运行完成;
+                this.ifRun = false;
+            }
+            run(){
+                //如果动画还没有运行完成则打断
+                if(this.ifRun) return;
+                // 递归来完成动画队列的清空
+                this.ifRun = true;
+                // 由于自执行函数内部this默认指向window,所以我们得手动绑定this
+                (function r() {
+                    if(this.size()){
+                        // 往Promise传入executor执行者函数时
+                        // 会自动调用执行者, 动画调用完成后会执行then方法
+                        new Promise(this.deQueue())
+                            .then(res =>{
+                                console.log(res);// 动画执行完成
+                                // 执行下一个动画队列
+                                r.call(this);
+                            })
+                    }
+                }).call(this)
+
+            };
+        }
+        //用来存储所有dom节点的动画队列
+        let animateMap = new Map();
+
+        //init类
+        class init{
+            constructor(selector) {
+                this.dom = document.querySelector(selector)
+            }
+            animate(options,time=300){
+                // 判断DOM节点是否注册过队列,如果没有则注册
+                if(!animateMap.get(this.dom)) {
+                    animateMap.set(this.dom,new _Queue())
+                }
+                // 获取DOM节点对应的动画队列
+                let queue = animateMap.get(this.dom);
+                // 动画任务入队
+                queue.enQueue((resolve) =>{
+                    this.dom.style.transition = time/1000 + "s";
+                    // 计算offsetTop. 触发页面重绘, 生成动画效果
+                    this.dom.offsetTop;
+                    for(let [key,val] of Object.entries(options)){
+                        this.dom.style[key] = val + "px";
+                    }
+                    // 动画执行完成后触发调用resolve
+                    setTimeout(resolve,time)
+                });
+                //动画队列调用
+                queue.run();
+                // 返回this 方便链式调用
+                return this
+            }
+        }
+        // 入口函数 返回一个实例对象
+        return function (selector) {
+            return new init(selector)
+        }
+    })();
+    aq('.box')
+        .animate({width:"300"})
+        .animate({height:"100"});
+</script>
+</body>
+
+</html>

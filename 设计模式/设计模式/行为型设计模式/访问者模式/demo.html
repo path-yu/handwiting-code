@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let person = {
+            addAttr(){
+                this.sex = '男';
+                this.hobby = '打篮球'
+            }
+        }
+        person.addAttr();
+       
+        let obj = {}
+
+
+        function add(){
+            return [].reduce.call(arguments,(total,next) => total + next)
+        }
+        console.log(add(1, 2, 3, 4, 5, 6))// 21
+
+        let Visitor = {
+            push(obj,value){
+                return Array.prototype.push.call(obj,value)
+            }
+        }
+        let x  = {};
+        Visitor.push(x,5);
+        console.info(x)//{0: 5, length: 1}
+        class
+    </script>
+</body>
+</html>

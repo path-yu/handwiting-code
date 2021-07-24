@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <script>
+           function MyIterator(arr) {
+                let currentIndex = 0,
+                    length = arr.length;
+                return {
+                    next() {
+                        return currentIndex >= length 
+                            ? { value: undefined, done: true }
+                            : { value: arr[currentIndex++], done: false };
+                    }
+                }
+            }
+            // let b = MyIterator(arr);
+            // console.log(b.next())
+            // console.log(b.next())
+            // console.log(b.next())
+            // console.log(b.next())
+        
+            function each(arr,callback){
+                let iterator = MyIterator(arr);
+                let result = iterator.next(),
+                    index = 0;
+                while (!result.done) {
+                    callback(result.value,index++,arr);
+                    result = iterator.next();
+                }
+            }
+            each([34,,4,54],(item) =>{
+                console.log(item)
+            })
+            let arrA = MyIterator([34, , 4, 54]);
+            [3,4,,455].forEach(item =>{
+                console.log(item)
+            })
+          
+        //    console.log(iterator.next())
+        //    console.log(iterator.next())
+        //    console.log(iterator.next())
+        //     console.log(iterator.next())
+        //    console.log(iterator.next())
+        //    console.log(iterator.next())
+          let obj = { name: '张三', age: 43 };
+            for (let key of Object.keys(obj)){
+                console.log(key)
+            } 
+            for (let val of Object.values(obj)) {
+                console.log(val)
+            } 
+            for(let [key,val] of Object.entries(obj)){
+                console.log([key,val])
+                // ["name",'张三'] ["age": 43]
+            }
+    </script>
+</body>
+</html>

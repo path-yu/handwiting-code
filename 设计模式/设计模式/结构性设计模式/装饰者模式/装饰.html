@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <style>
+    </style>
+</head>
+<body>
+<div id='app'></div>
+    <script src='https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+    <script>
+        // 装饰者模式, 在不改变原对象的基础上, 对其进行包装扩展, 以满足更复杂的需求
+        console.log($);
+        class Animal{
+            constructor(name,age){
+                this.name = name;
+                this.age = age;
+            }
+            sayName(){
+                return this.name
+            }
+        }
+        console.log(typeof Animal);
+        let dog = new Animal('dog',15),
+            pig = new Animal('pig',25);
+      function decorate(target,options){
+        for(let [key,val] of Object.entries(options)){
+            target[key] = val
+        }
+        return target
+      }
+      dog = decorate(dog,{trait:'喜欢咬人'})
+     pig = decorate(pig,{trait:'喜欢吃'});
+     console.log(pig);
+     // 假设我们现在有一个Pig类, 它有一个eat方法, 现在我们想在不改变类的前提下给实例添加方法
+    class Student {
+        constructor(name, sex, hobby) {
+            this.name = name;
+            this.sex = sex
+            this.hobby = hobby
+        }
+        showName() {
+            console.log(this.name);
+        }
+    }
+    // 实例使用
+    const zhangsan = new Student('张三','男',"打篮球"),
+          lisi = new Student('李四', '男', "看书"),
+          wangwu = new  Student('王五', '男', "学习");
+    console.log(zhangsan);
+    function Decorator(instance,options){
+        for(let [key,val] of Object.entries(options)){
+            if (!Reflect.get(instance, key)) {
+                Reflect.defineProperty(instance, key, {
+                    value: val,
+                })
+            }else{
+                console.error(`target Object an existing ${key} attribute `)
+            }
+        }
+    }
+    Decorator(lisi, { age: 12,sayAge(){
+        console.log(this.age);
+    }})
+     Decorator(lisi, {
+        sayAge(a) {
+            console.log(111);
+        }
+    },false)
+    console.log(lisi);
+    lisi.sayAge()
+    function f1(){
+        console.log("f1");
+    }
+    function f2() {
+            console.log("f2");
+    }
+    window.addEventListener('load',f1,false);
+    window.addEventListener('load', f2, false);
+    let arr = [ 4,324,4,43,43];
+    // 假设我们要给数组的实例arr添加一个方法,显然我们如果利用原型继承给Array的原型添加方法是不合适的
+    // 此时我们也可以使用装饰器模式
+    Decorator(arr,{
+        max(){
+            return  Math.max.call(null, ...this)
+        }
+    })  
+    arr.max();// 324
+    </script>
+</body>
+</html>

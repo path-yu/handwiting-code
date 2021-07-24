@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        td {
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+        table {
+            width: 500px;
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h2>欢迎光临水果店</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>水果名</th>
+                    <th>水果价格</th>
+                    <th>水果数量</th>
+                    <th>累计</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+    </div>
+    <script>
+        let MVP = (function () {
+            const M = (function () {
+                let data = [
+                    {
+                        fruitsName: '西瓜',
+                        fruitsPrice: '30',
+                        fruitsCount: 0,
+                        fruitsTotal: 0,
+                    },
+                    {
+                        fruitsName: '香蕉',
+                        fruitsPrice: '10',
+                        fruitsCount: 0,
+                        fruitsTotal: 0,
+                    }
+                ];
+                return {
+                    updateData(bool, index) {
+                        this.handleData(data[index],bool);
+                        this.vaildate(data,index);
+                    },
+                    handleData(fruits,bool){
+                        bool ? fruits.fruitsCount++ :fruits.fruitsCount--;
+                        fruits.fruitsTotal = fruits.fruitsPrice * fruits.fruitsCount;
+                    },
+                    getData(){
+                        return [...data];
+                    },
+                    vaildate(data,index){
+                        let fruits = data[index];
+                        // 限定商品的数量必须在0 -20之间
+                        fruits.fruitsCount = Math.max(0, Math.min(20,fruits.fruitsCount));
+                        fruits.fruitsTotal = Math.max(0,fruits.fruitsTotal);
+                        if(fruits.fruitsCount === 0){ alert('商品数量不能小于0')}
+                        else if(fruits.fruitsCount === 20) {alert('商品数量不能大于20')}
+                    }
+                }
+            })()
+            const V = (function () {
+                let tbody = document.querySelector('tbody'),
+                    countDom = null,
+                    totalDom = null;
+                //获取对应需要渲染视图的DOM节点
+                function getEle() {
+                    countDom = document.querySelectorAll('.count');
+                    totalDom = document.querySelectorAll('.total');
+                }
+                return {
+                    // 初始化渲染数据接口
+                    initRender(data) {
+                        //拼接对应的HTML字符串
+                        const htmlStr = data.reduce((total, item) => {
+                            return total += `
+                                <tr>
+                                    <td>${item.fruitsName}</td>
+                                    <td class='price'>${item.fruitsPrice}/个</td>
+                                    <td class='count'>${item.fruitsCount}</td>
+                                    <td class='total'>${item.fruitsTotal}</td>
+                                    <td>
+                                        <button class='increment'>+</button>
+                                        <button class='decrement'>-</button>
+                                    </td>
+                                </tr>
+                            `
+                        }, '');
+                        tbody.innerHTML= htmlStr;
+                        // 渲染完成时获取对应的DOM节点
+                        getEle();
+                        // 返回对应的操作页面按钮DOM元素节点
+                        return {
+                            increment:document.querySelectorAll('.increment'),
+                            decrement:document.querySelectorAll('.decrement')
+                        }
+                    },
+                    // 更新视图接口
+                    updateView(index,data){
+                        countDom[index].textContent = data[index].fruitsCount;
+                        totalDom[index].textContent = data[index].fruitsTotal;
+                    }
+                }
+            })();
+            const P = (function(){
+                //深度遍历DOM并绑定绑定对应的事件
+                function walkDom(eles){
+                    for(let [key,val] of Object.entries(eles)){
+                        for(let i = 0, len = val.length;i < len;i++){
+                            if(key === 'increment'){
+                                bindClick(val,true,i);
+                            }else{
+                                bindClick(val,false,i);
+                            }
+                        }
+                    }
+                }
+                // 给对应元素绑定点击事件
+                function bindClick(val,bool,index){
+                    val[index].addEventListener('click',ev =>{
+                          // 更新Model层数据
+                        M.updateData(bool, index);
+                        //通过model的getData获取最新数据并更新视图
+                        V.updateView(index, M.getData());
+                    },false)
+                }
+                return {
+                    init(){
+                        // 渲染视图 遍历DOM并绑定点击事件
+                        walkDom(V.initRender(M.getData()))
+                    }
+                }
+            })();
+            return {
+                init(){P.init()}                
+            }
+        })();
+        // MVP.init();
+    </script>
+</body>
+
+</html>

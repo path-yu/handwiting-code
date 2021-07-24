@@ -1,0 +1,76 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="box"></div>
+<script>
+    
+
+   class MyMap{
+       constructor(){
+            this.table = []
+       }
+       set(key,val){
+           // 如果key为空字符串则 返回false
+          if(key==="") return false
+              // 遍历以检查键值是否存在, 如果存在则进行覆盖
+            for(let item of this.table){
+                if(item[0] === key){
+                    item[1] = value;
+                    return false
+                }
+            }
+            // 往数组中添加数组键值对
+            this.table.push([key,val]);
+            // 返回true 表示设置成功
+            return true
+           return false
+       }
+        get(key) {
+           if (!key) return undefined;
+            // 遍历查找出对应的键值,并返回键值
+           for (let item of this.table) {
+                if(item[0] === key){
+                    return item[1]
+                }
+           }
+           return undefined
+       }
+       delete(key){
+            if (!key) return undefined;
+            // 遍历查找出对应的键值,并从数组中删除
+            for(let index of Object.keys(this.table)){
+                let item = this.table[index];
+                if(item[0] === key){
+                    this.table.splice(index,1);
+                    return true
+                }
+            }
+       }
+       has(key){
+           // 返回字典中是否存在对应的key
+           return this.table.some(item => item[0] === key)
+       }
+       size(){
+           return this.table.length
+       }
+   }
+   let map = new MyMap();
+    let box = document.querySelector('.box')
+    console.log(map.set(box, "box元素"));// true
+    console.log(map.get(box))//box元素.
+    console.log(map.has(box));// true
+    console.log(map.set('name', "张三"))
+    console.log(map.delete(box))
+    console.log(map.has('box'));// true
+    console.log(map.get("name"));//张三
+    console.log(map.size())//1
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // function request(value){
+        //     if(value <= 10000){
+        //         console.log('移交部门负责人处理');
+        //         // code...
+        //     }else if(value <= 50000){
+        //         console.log('移交院负责人处理')
+        //         // code...
+        //     }else if(value <= 100000){
+        //         console.log('移交群负责人处理')
+        //         // code...
+        //     }else if(value > 100000){
+        //         console.log('移交董事长处理')
+        //         // code...
+        //     }
+        // }
+        // request(20000) // 移交院负责人处理
+       //将每个分支结构分离：
+        function director01(value) {
+            if (value <= 10000) {
+                console.log("移交部门负责人处理。");
+                //some code……
+            } else {
+                //移交给下一个处理人
+                director02(value);
+            }
+        }
+        function director02(value) {
+            if (value <= 50000) {
+                console.log("移交院负责人处理。");
+                //some code……
+            } else {
+                //移交给下一个处理人
+                director03(value);
+            }
+        }
+        function director03(value) {
+            if (value <= 100000) {
+                console.log("移交群负责人处理。");
+                //some code……
+            } else {
+                //移交给下一个处理人
+                director04(value);
+            }
+        }
+        function director04(value) {
+            if (value > 100000) {
+                console.log("移交董事长处理。");
+                //some code……
+            }
+        }
+
+        //只需要从第一个处理人开始
+        director01(20000);
+        class Chain{
+            constructor(){
+                this.length = 0;
+                this.successor = [];
+            }
+            setSuccessor(...rest){
+                this.length = rest.length;
+                this.successor = rest
+            }
+            request(...rest){
+                // 利用自执行函数
+              (function dispose(index){
+                    if(index > this.length) {
+                        return '无法处理'
+                    }
+                    let result = this.successor[index](...rest);
+                    if(result === 'next'){
+                        index++;
+                        dispose.call(this,index)
+                    }else{
+                        return result
+                    }
+                }).call(this,0);
+
+                let index = 0,
+                    result = this.successor[index](...rest);
+                while(result === 'next'){
+                    result = this.successor[++index](...rest);
+                }
+                return result
+            }
+        }
+        //将每个分支结构分离：
+            function director01(value) {
+                if (value <= 10000) {
+                    console.log("移交部门负责人处理。");
+                    //some code……
+                } else {
+                    //无须再强关联下一个处理函数
+                    return "next";
+                }
+            }
+            function director02(value) {
+                if (value <= 50000) {
+                    console.log("移交院负责人处理。");
+                    //some code……
+                } else {
+                    //无须再强关联下一个处理函数
+                    return "next";
+                }
+            }
+            function director03(value) {
+                if (value <= 100000) {
+                    console.log("移交群负责人处理。");
+                    //some code……
+                } else {
+                    //无须再强关联下一个处理函数
+                    return "next";
+                }
+            }
+            function director04(value) {
+                if (value > 120000) {
+                    console.log("移交董事长处理。");
+                    //some code……
+                    return true
+                }
+            }
+
+            //实现链
+            let request = new Chain();
+            //设置处理队列
+            request.setSuccessor(
+                director01,
+                director02,
+                director03,
+                director04,
+            );
+            //调用
+            let res = request.request(120003);
+            console.log(res)
+    </script>
+</body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+<div id="app">
+    <a v-bind:href="href">链接</a>
+    <label>
+        <input type="text" v-model="student.name" value="aa" />
+        <p>{{student.name}}</p>
+    </label>
+    <img :src="url" alt="">
+    <p>{{text}}</p>
+    {{name}}
+    <div>{{href}}</div>
+    <h2>{{count}}</h2>
+    <p>{{studentList.hobby}}</p>
+    <button @click="change(2)">加加</button>
+</div>
+    <script>
+
+       class Compiler {
+            static compilerUtil = {
+                fnList: [ // 保存所有解析模板的函数
+                    function model(el, vm) { // 解析v-model指令
+                        // 获取对应的v-mode属性值xx  v-model="xx"
+                        let modelKey = el.getAttribute('v-model');
+                        //如果存在对应的属性值
+                        if (modelKey) {
+                            //利用reduce 获取实例对象深层的属性值
+                            el.value = this.getVal(modelKey, vm);
+                            // 删除节点的v-mode指令
+                            el.removeAttribute("v-model")
+                            // 拼接出vm.xx.xx类似的字符串
+                            let property = "vm.$data." + modelKey;
+                            // 视图 => 数据 数据=> 视图
+                            // 绑定input事件监听输入框的value值,并改变实例上对应的数据
+                            el.addEventListener('input', ev => {
+                                let value = ev.target.value;
+                                // 通过eval函数将 vm.xx.xx=xx类型的字符串当做表达式调用
+                                eval(`${property}='${value}'`)
+                            });
+                            observer.on(modelKey, (val) => {
+                                el.value = val;
+                            })
+                        }
+                    },
+                    function Bind(el, vm, attr) {
+                        // 将自定义的v-bind:xx==xx 属性的key和value解构出来, name即v-bind, value即xx
+                        const { name, value } = attr;
+                        // 如果name中存在v-bind 或者以:开头时进行相应的绑定
+                        if (name.includes('v-bind') || name.startsWith(":")) {
+                            //  v-bind:xx中将对应的属性名xx解构出来
+                            let [, key] = name.split(":");
+                            // 获取对应的数据
+                            let res = this.getVal(value, vm);
+                            // 删除指令
+                            el.setAttribute(key, res);
+                            // 订阅数据变化
+                            observer.on(value, val => {
+                                el.setAttribute(key, val);
+                            })
+                            // 删除指令
+                            el.removeAttribute(name)
+                        }
+                    },
+                    //解析 mustache 语法
+                    function mustache(el, vm) {
+                        let reg = /{{(.+?)}}/g; // 全局匹配 {{xx.xx}}的正则
+                        // 如果不为元素节点, 即为文本节点
+                        if (!Compiler.isElement(el)) {
+                            //利用matchAll全局匹配
+                            let matches = [...el.textContent.matchAll(reg)];
+                            matches.forEach(item => {
+                                // 取出{{xx}}中对应的xx
+                                let key = item[1]
+                                // 订阅数据变化
+                                  
+                                observer.on(key, val => {
+                                  console.log(key)
+                                    el.textContent = val
+                                });
+                                // 设置节点的文本
+                                this.setText(el, vm, key)
+                            });
+                        }
+                    },
+                    // 处理事件绑定
+                    function onEvent(el, vm, property) {
+                        // 解构出对应的name和value
+                        let { name, value } = property;
+                        // 如果name包含v-on 或者为@开头时, 绑定对应的事件
+                        if (name.includes('v-on') || name.startsWith("@")) {
+                            // 保存对应的事件名
+                            let eventName = null
+                            if (name.startsWith("@")) {
+                                [, eventName] = name.split("@");
+                            } else {
+                                [, eventName] = name.split(":");
+                            };
+                            // 从实例对象中取出对应的事件执行函数
+                            let fn = vm.methods[value];
+                            // 处理@click="handler(xx.x,12)"类型的事件的正则
+                            let reg = /([a-z]+)\((.+?)\)/,
+                                arg = null;// 对的参数集合
+                            // 如果为v-on:click="xx(xx,xx)"格式的事件
+                            if (reg.test(value)) {
+                                let res = value.match(reg),
+                                    key = res[1],// 取出对应的事件函数名
+                                    args = res[2];// 对应的参数集合
+                                let fn = vm.methods[key];
+                                // 如果参数集合的length>1, 则利用reduce取出所有的参数
+                                if (args.split(',').length > 1) {
+                                    args = args.split(",").reduce((total, arg) => {
+                                        let val = this.getVal(arg, vm);
+                                        // 如果存在对应的数据则添加到total, 否者添加arg
+                                        if (val) {
+                                            total.push(val)
+                                        } else {
+                                            total.push(arg)
+                                        }
+                                        return total
+                                    }, [])
+                                    // 利用bind绑定对应的this, 并传递对应的参数集合
+                                    el.addEventListener(eventName, fn.bind(vm, ...args), false)
+                                } else {
+                                    let res = this.getVal(args, vm)
+                                    // res为undefined, 则将args添加到参数集合中
+                                    args = res ? res : args;
+                                    el.addEventListener(eventName, fn.bind(vm, args), false)
+                                }
+                            } else {
+                                // 当没有传递任何参数时, 直接绑定对应的时间爱你
+                                el.addEventListener(eventName, ev => {
+                                    fn.call(vm, ev)
+                                })
+                            }
+                        }
+                    },
+                ],
+                //设置节点的文本
+                setText(el, vm, key) {
+                     let val = this.getVal(key, vm);
+                    el.textContent = val !== undefined ? val : ''
+                },
+                init(el, vm) {
+                    //取出当前节点所以的标签属性集合
+                    let attrs = el.attributes;
+                    // 遍历解析DOM的函数
+                    this.fnList.forEach(fn => {
+                        // 遍历attrs并调用fn,并将fn内部this指向compilerUtil,并传入对应的attr
+                        [...attrs].forEach(attr => {
+                            fn.call(this, el, vm, attr)
+                        })
+                    })
+                },
+                // 获取实例对象深层的属性值 例如xxx.xxx.xxx类似的值
+                getVal(key, vm) {
+                    return key.split('.').reduce((data, current) => {
+                        return data[current]
+                    }, vm.$data);
+                },
+            };
+            constructor(el, vm) {
+                this.$el = el;
+                this.vm = vm;
+                // 解析文档碎片 减少文档重排重绘
+                const fragment = this.createFragment();
+                // 解析文档碎片
+                this.compilerFragment([...fragment.childNodes]);
+                //将文档碎片追加到根元素中
+                this.$el.appendChild(fragment)
+            }
+            createFragment() {
+                // 创建文档碎片
+                let fragment = document.createDocumentFragment();
+                // 将所有的根元素的子节点追加到文档碎片中
+                [...this.$el.childNodes].forEach(child => {
+                    fragment.append(child);
+                });
+                // 返回文档碎片
+                return fragment;
+            }
+            compilerFragment(nodeList) {
+                nodeList.forEach(node => {
+                    // 如果为元素节点则进行编译
+                    if (Compiler.isElement(node)) {
+                        Compiler.compilerUtil.init(node, this.vm)
+                    } else {
+                        this.compilerText(node, this.vm)
+                    }
+                    // 如果子节点还有子节点元素就递归遍历该子节点
+                    if (node.childNodes.length) {
+                        this.compilerFragment([...node.childNodes], this.vm);
+                    }
+                })
+            }
+            compilerText(node, vm) {
+                const text = node.textContent;
+                let reg = /{{(.+?)}}/; // 匹配 {{xx.xx}}的正则
+                // 取出fnList中解析文本的函数
+                const { fnList } = Compiler.compilerUtil;
+                if (reg.test(text)) {
+                    // 将解析文本的函数内部this指向当Compiler.compilerUtil, 方便调用对应的方法
+                    fnList[2].call(Compiler.compilerUtil, node, vm)
+                }
+            }
+            // 判断节点是否为元素节点
+            static isElement = (node) => {
+                return node instanceof Element
+            }
+        }
+        // 进阶版观察者
+        let observer = new class Observer {
+            constructor() {
+                //储存订阅者
+                this.subscribes = {}
+            }
+            //订阅
+            on(name, callback) {
+                // 如果不存在这个订阅者就添加这个订阅者
+                if (!this.subscribes[name]) {
+                    this.subscribes[name] = [];
+                }
+                this.subscribes[name].push(callback)
+            }
+            // 发布
+            emit(name, msg) {
+                // 如果不存在这个订阅者就打断函数执行
+                if (!this.has(name)) throw new Error('未找到订阅者');;
+                this.subscribes[name].forEach(fn => fn(msg))
+            }
+            //解绑
+            off(name, callback) {
+                let callbackList = this.subscribes[name];
+                if (!callbackList) throw new Error('未找到订阅者');
+                // 找出对应订阅者的事件函数并从删除
+                let index = callbackList.indexOf(callback);
+                if (index === 1) return false;
+                else callbackList.splice(index, 1)
+            }
+            // 判断是否存在对应的订阅者
+            has(name) {
+                return Reflect.has(this.subscribes, name)
+            }
+        };
+        //通过将obj.xx.xx形式的key利用split切割并利用reduce方法
+        //获取深层对象的value值
+        function getVal(key, data) {
+            console.log(key)
+            return key.split('.').reduce((data, current) => {
+                return data[current]
+            }, data);
+        }
+        //data为当前的遍历对象, p为set触发时的传入的key, val为对应设置的属性值
+        // result表示上一级的key, obj为原始的数据data
+        function getDeepProperty(data, p, val, result, obj) {
+            for (let key of Object.keys(data)) {
+                // 如果属性值为对象则递归遍历, 并传入当前key.便于递归查找
+                if (typeof data[key] === 'object') {
+                    result = result ? result + `.${key}` : key;
+                    let res =  getDeepProperty(data[key], p, val, result, obj);
+                    if(res) return res
+                }
+                // 如果存在result则拼接出类似student.name
+                if (result) {
+                    let oldKey = key
+                    key = result + `.${key}`;
+                    let value = getVal(key, obj);
+                    // 如果对应的key和p, val和value相等则返回key
+                    if (value === val && oldKey === p){
+                        return key
+                    } {
+                        result = null
+                    }
+                } else {
+                    let value = getVal(key, obj);
+                    console.log(value)
+                    if (val === value && p === key) {
+                          console.log(key)
+                        return key
+                    }
+                }
+            }
+        }
+        class MVVM {
+            constructor(options) {
+                // 校验options的参数类型
+                if (isObject(options) !== "[object Object]") throw new Error('type error');
+                // 将参数, data, method 解构出来
+                const { data = {}, el = null, methods = {} } = options;
+                this.$data = data;
+                this.methods = methods
+                this.$el = document.querySelector(el);
+                let self = this;
+                this.$data = new DeepProxy(this.$data, {
+                    set(target, p, value) {
+                        Reflect.set(target, p, value);
+                        //  console.log(p)
+                        p = getDeepProperty(self.$data, p, value, "", self.$data);
+                       
+                        // 如果存在对应的订阅者则进行发布
+                        observer.has(p) ? observer.emit(p, value) : ''
+                        return true
+                    },
+                    ge(target, key) {
+                        return Reflect.get(target, key)
+                    }
+                })
+                this._proxyData(this.$data);
+                new Compiler(this.$el, this)
+            }
+            _proxyData(data) {
+                // 遍历data属性的key, 利用Object,definePrototype 进行数据劫持
+                Object.keys(data).forEach(key => {
+                    Object.defineProperty(this, key, {
+                        enumerable: true,
+                        configurable: true,
+                        set(newVal) {
+                            if (newVal !== data[key]) data[key] = newVal;
+                        },
+                        get() {
+                            return data[key]
+                        }
+                    })
+                })
+            }
+        }
+        // 校验参数的类型是否为对象
+        function isObject(target) {
+            return Function.prototype.call.bind(Object.prototype.toString)(target)
+        }
+        class DeepProxy {
+            constructor(data, handler) {
+                // 显示返回proxy对象
+                return this.toDeepProxy(data, handler)
+            }
+            toDeepProxy(target, handler) {
+                Object.keys(target).forEach(key => {
+                    // 如果属性值类型为对象增递归监听
+                    if (typeof target[key] == 'object') {
+                        target[key] = this.toDeepProxy(target[key], handler);
+                    }
+                });
+                return new Proxy(target, handler)
+            }
+        }
+        
+        
+          let vm = new MVVM({
+                el: '#app',
+                data: {
+                    name: '张三',
+                    href: 'www.baidu.com',
+                    text: '这是一条文本',
+                    url: 'https://dss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3363295869,2467511306&fm=26&gp=0.jpg',
+                    student: {
+                        name: '小明',
+                    },
+                    count: 1,
+                    studentList: {
+                        hobby:"单领取",
+                    }
+                },
+                methods: {
+                    change(num) {
+                        num = Number(num);
+                        this.count += num;
+                        //  console.log(this.count)
+                        this.name = "李四"
+                        this.text = "这是新文本";
+                        this.studentList.hobby = "4343432"
+                        this.href = "https://www.bilibili.com/"
+                        this.url = "https://dss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1819216937,2118754409&fm=26&gp=0.jpg"
+                    },
+                }
+            });
+        
+            // console.log(vm.student.name = 43);
+
+        function getKey() {
+
+        }
+    </script>
+</body>
+
+</html>

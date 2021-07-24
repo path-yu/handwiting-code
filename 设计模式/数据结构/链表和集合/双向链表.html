@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    const LinkedList = (function () {
+        let HEAD = Symbol();
+        // 创建节点的基本类
+        class Node {
+            constructor(element) {
+                this.element = element;
+                // 指向下一个节点的指针
+                this.next = null;
+            }
+        }
+        // 对Node类进行扩展
+        class DoublyNode extends Node{
+            constructor(element,) {
+                super(element);
+                this.pre = null;
+            }
+        }
+        return class {
+            constructor() {
+                // 头节点
+                this[HEAD] = null;
+                // 链表的个数
+                this.count = 0;
+            }
+            //往链表链尾追加数据
+            append(element) {
+                // 创建对应的链节点
+                const node = new Node(element);
+                // 获取链头
+                let head = this[HEAD];
+                // 如果链头是null;
+                if (this[HEAD] === null) {
+                    this[HEAD] = node;
+                } else {
+                    // 如果不是链头则循环找到链尾
+                    while (head.next !== null) {
+                        head = head.next;
+                    }
+                    // 将其next指向新节点, 建立链接
+                    head.next = node
+                }
+                this.count++;
+                return this
+            }
+            // 查找指定元素对应的节点
+            find(element, index) {
+                let result = [];
+                let head = this[HEAD];
+                // 如果头节点为 null 则返回空数组
+                if (head === null) return result;
+                // index没有传值, 将按元素是是否相等进行查找
+                if (index === undefined) {
+                    while (head !== null) {
+                        if (head.element === element) {
+                            result.push(head);
+                        }
+                        head = head.next;
+                    }
+                }
+                // 如果index有中则按照下标进行查找
+                if (typeof index === "number") {
+                    let i = 0;
+                    while (head !== null) {
+                        if (index === i) {
+                            result.push(head)
+                        }
+                        head = head.next;
+                        i++;
+                    }
+                }
+                return result
+            }
+            //在链表指定位置进行插入元素
+            insert(element, index) {
+                // 检测所以值, 防止越界
+                if (index >= 0 && index <= this.count) {
+                    const node = new Node(element);
+                    if (index === 0) {// 在第一个位置添加
+                        const current = this[HEAD];
+                        node.next = current;
+                        this[HEAD] = node;
+                    } else {
+                        // 将上一个节点的next指向插入的节点 
+                        // 并且当插入的节点的next指向上一个节点的next
+                        const pre = this.find("", index - 1)[0];
+                        const current = pre.next;
+                        node.next = current;
+                        pre.next = node;
+                        this.count++
+                        return true;
+                    }
+                }
+                // 表示插入失败
+                return false;
+            }
+            // 通过指定数据或者下标删除指定节点
+            remove(element, index) {
+                //获取当前删除的节点
+                let head = this[HEAD];
+                // 如果index没有传值则, 则通过查找元素是否相等来进行删除
+                if (index === undefined) {
+                    // 如果为头节点则直接清空
+                    if (head.element === element) {
+                        this[HEAD] = head.next;
+                        return
+                    }
+                    // 遍历链表直到指针不为空, 如果当前节点的元素的下一个节点元素与目标元素相等
+                    // 则将其指针指向指针得下一个的下一个,来进行清空节点
+                    while (head.next !== null) {
+                        if (head.next.element = element) {
+                            head.next = head.next.next;
+                            this.count--
+                        }
+                        return;
+                        head = head.next
+                    }
+                }
+                else if (typeof index === "number") {
+                    //如果为头节点
+                    if (index === 0) {
+                        this[HEAD] = head.next;
+                        return
+                    }
+                    let i = 0;
+                    while (head.next !== null) {
+                        if (i === index) {
+                            head.next = head.next.next;
+                            this.count--
+                            return
+                        }
+                        i++;
+                        head = head.next;
+                    }
+                }
+            }
+            // 返回链表个数
+            size() {
+                return this.count
+            }
+            // 打印链表
+            print() {
+                let current = this[HEAD];
+                while (current !== null) {
+                    console.log(current.element);
+                    current = current.next
+                }
+            }
+            //返回元素在链表中的索引, 如果没有则返回-1
+            indexOf(element) {
+                let head = this[HEAD],
+                    index = 0;
+                while (head.next !== null) {
+                    if (head.element === element) {
+                        return index
+                    }
+                    index++;
+                    head = head.next
+                }
+                return -1
+            }
+        }
+    })();
+    class DoubleLinkedList extends  LinkedList{
+        constructor(){
+
+        }
+    }
+    console.log(DoubleLinkedList)
+</script> 
+</body>
+</html>

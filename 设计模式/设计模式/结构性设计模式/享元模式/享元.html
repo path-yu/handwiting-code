@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <style>
+        div{
+            width: 200px;
+            height: 200px;
+            margin-top: 20px;
+            background-color: #f46;
+        }
+        ul{
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+<div class="box1"></div>
+<div class="box2"></div>
+<div class="box3"></div>
+<ul>
+    <li>xx</li>
+    <li>xxx</li>
+    <li>xxxx</li>
+    <li>xxx</li>
+</ul>
+    <script>
+        /* 
+            享元模式, 通过共享大量力度的对象, 避免拥有相同的内容造成内容的开销
+
+            也就是说享元模式就是一种代码的优化策略,在浅显的解释就是:相同的部分提出来或者采用
+            其他形式优化掉
+        
+        */
+
+        // 场景一
+        
+        // 最最最简单的享元模式
+        //  提出相同事件函数, 只需要定义一个函数就能满足所有人的需求
+        const $ = selector => document.querySelector(selector);
+        // $('.box1').onclick = function(){console.log(11);}
+        // $('.box2').onclick = function () { console.log(11); }
+        // $('.box3').onclick = function () { console.log(11); }
+
+
+        // 提出后
+        const clickEvent = function(){console.log(111);}
+        console.log($('.box3').onclick = clickEvent);// 返回 clickEvent 事件处理函数
+        $('.box1').onclick =  $('.box2').onclick =  $('.box3').onclick = clickEvent
+
+        // 最最最常见的享元模式 事件委托
+        /* 
+            假设我们ul标签里面有很多个li标签, 我们需要给每个li标签身上添加一个点击事件
+            如果我们通过遍历所有的li标签并为其注册点击事件的方式,会造成内存占用过多
+            因为我们每个li标签身上的事件处理函数都是独立的,在内存中占用一块独立内存
+            而每个li点击事件的处理函数都是一致的, 我们可以通过共用这一个事件处理函数来达到需求
+        */
+        // $('ul>li').click(function(){
+        //     console.log(111)
+        // })
+    //   $('ul').addEventListener('click',ev =>{
+    //      if(ev.target.nodeName === 'LI'){
+    //          /// code...   逻辑代码
+    //      }
+    //   })
+    Array.from($('ul').children).forEach(li =>{
+      li.addEventListener('click' , clickEvent)
+    })
+      /// 场景1 
+      /* 
+       现在我们需要拍出一周100节课的上课信息
+       信息包括老师的的信息 时间信息等
+      */
+
+      let SingleTeacher = (function (){
+            let commonIns = {}
+            return class{
+                constructor(id,name,sex) {
+                    if(commonIns[id]) return commonIns[id]
+                    commonIns[id] = this
+                    this.id = id;
+                    this.name = name;
+                    this.sex = sex
+                }
+            }
+      })()
+     class ClassInfo{
+         constructor(id,name,sex,time){
+            this.thecher = new SingleTeacher(id,name,sex);
+            this.time = time;
+         }
+         getInfo(){
+             //适配器
+             let keyValList = Object.entries(this.thecher)
+            for (const [key,val] of  keyValList) {
+                this[key] = val
+            }
+            console.log(this.time + "，工号：" + this.id + "，" + this.name + "老师，TA是一位厉害的" + this.sex + "老师哦！");
+            for (const [key, val] of keyValList) {
+               delete this[key]
+            }
+            console.log(this);
+         }
+     }
+    //实例
+        let classList = [
+            new ClassInfo("02050", "朱雀", "女", "周一 14:30"),
+            new ClassInfo("02051", "乌拉", "女", "周一 15:30"),
+            new ClassInfo("02052", "阿飞", "男", "周一 16:30"),
+            new ClassInfo("02053", "心艾", "女", "周一 17:30"),
+            new ClassInfo("02050", "朱雀", "女", "周一 18:30"),
+            new ClassInfo("02052", "阿飞", "男", "周一 19:30"),
+            new ClassInfo("02051", "乌拉", "女", "周一 20:30"),
+            new ClassInfo("02050", "朱雀", "女", "周一 21:30"),
+            //………………
+        ];
+        console.log(classList[2].teacher ===  classList[7].teacher); // true
+        console.log(classList[2].getInfo());
+
+        /* 
+            总结: 享元模式就是把我们说过的封装的概念运用的更高级点, 同时一般会配合单例模式来实现
+        */
+        //  假设现在要排出一周40节课的上课信息
+        class ClassInfo{
+            constructor(){
+                this.Tname = name;
+                this.Tsex = sex;
+                this.time = time;
+            }
+        }
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <h2>欢迎光临水果店</h2>
+        <table>
+            <thead>
+                <th>水果名</th>
+                <th>水果价格</th>
+                <th>水果数量</th>
+                <th>累计</th>
+                <th>操作</th>
+            </thead>
+            <tbody>
+    
+            </tbody>
+        </table>
+    </div>
+    <script>
+     
+        let MVP = (function () {
+            // 数据层
+           const M = (function () {
+                // 原始数据
+                let data = [
+                    {
+                        fruitsName: '西瓜',
+                        fruitsPrice: '30',
+                        fruitsCount: 0,
+                        fruitsTotal: 0,
+                    },
+                    {
+                        fruitsName: '香蕉',
+                        fruitsPrice: '10',
+                        fruitsCount: 0,
+                        fruitsTotal: 0,
+                    }
+                ];
+                return {
+                    //更新数据的接口
+                    updateData(bool, index) {
+                        this.handleData(data[index], bool);
+                        this.vailDate(data, index);
+                    },
+                    //处理数据的接口, 对数据进行运算
+                    handleData(fruits, bool) {
+                        bool ? fruits.fruitsCount++ : fruits.fruitsCount--;
+                        fruits.fruitsTotal = fruits.fruitsPrice * fruits.fruitsCount;
+                    },
+                    // 返回数据的接口
+                    getData() {
+                        return [...data];
+                    },
+                    // 检验数据接口
+                    vailDate(data, index) {
+                        let fruits = data[index];
+                        // 限定商品的数量必须在0 -20之间
+                        fruits.fruitsCount = Math.max(0, Math.min(20, fruits.fruitsCount));
+                        fruits.fruitsTotal = Math.max(0, fruits.fruitsTotal);
+                        if (fruits.fruitsCount === 0) { alert('商品数量不能小于0') }
+                        else if (fruits.fruitsCount === 20) { alert('商品数量不能大于20') }
+                    }
+                }
+            })();
+            // 视图层
+         const V = (function () {
+                // 获取tbody节点以便渲染视图
+                let tbody = document.querySelector('tbody'),
+                    countDom = null,// 全局保存对应的显示水果数量的DOM元素列表
+                    totalDom = null;
+                //获取对应需要渲染视图的DOM节点
+                function getEle() {
+                    countDom = document.querySelectorAll('.count');
+                    totalDom = document.querySelectorAll('.total');
+                }
+                return {
+                    // 初始化渲染数据接口
+                    initRender(data) {
+                        //利用reduce拼接对应的HTML字符串
+                        let HTMLStr = data.reduce((total, item) => {
+                            return total += `
+                                    <tr>
+                                        <td>${item.fruitsName}</td>
+                                        <td class='price'>${item.fruitsPrice}/个</td>
+                                        <td class='count'>${item.fruitsCount}</td>
+                                        <td class='total'>${item.fruitsTotal}</td>
+                                    <td>
+                                        <button class='increment'>+</button>
+                                        <button class='decrement'>-</button>
+                                    </td>
+                                    </tr>
+                                 `
+                        }, '');
+                        // 渲染tbody的innerHTML
+                        tbody.innerHTML = HTMLStr;
+                        // 渲染完成时获取对应的DOM节点
+                        getEle();
+                        HTMLStr = null;
+                        // 返回对应的操作页面按钮DOM元素节点
+                        return {
+                            increment: document.querySelectorAll('.increment'),
+                            decrement: document.querySelectorAll('.decrement')
+                        }
+                    },
+                    // 更新视图接口
+                    updateView(index, data) {
+                        countDom[index].textContent = data[index].fruitsCount;
+                        totalDom[index].textContent = data[index].fruitsTotal;
+                    }
+                }
+            })();
+            //逻辑处理层, 负责将view层和model建立联系
+            const P = (function () {
+                //深度遍历DOM并绑定绑定对应的事件
+                function walkDom(ObjDom) {
+                    // 利用Object.entries将key和val取出来并进行遍历
+                    for (let [key, val] of Object.entries(ObjDom)) {
+                        //遍历对应的按钮节点
+                        for (let i = 0, len = val.length; i < len; i++) {
+                            // 当key为increment,实现数据累加功能
+                            if (key === 'increment') {
+                                bindClick(val, true, i);
+                            } else {
+                                bindClick(val, false, i);
+                            }
+                        }
+                    }
+                }
+                // 给对应元素绑定点击事件
+                function bindClick(val, bool, index) {
+                    val[index].addEventListener('click', ev => {
+                        // 更新Model层数据
+                        M.updateData(bool, index);
+                        //通过model的getData获取最新数据并更新视图
+                        V.updateView(index, M.getData());
+                    }, false)
+                }
+                return {
+                    init() {
+                        // 渲染视图 遍历DOM并绑定点击事件
+                        walkDom(V.initRender(M.getData()))
+                    }
+                }
+            })();
+            return {
+                // 初始化执行MVP模型
+                init() {
+                    P.init()
+                }
+            }
+        })();
+        MVP.init()
+           //上面的代码我们简单搭建了MVP结构,其中M层是数据相关层,V层负责视图的渲染,P层负责逻辑的处理
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+
+<script>
+//使用闭包
+const Single = (function (){
+    let ins = null
+    return class{
+      constructor(){
+          console.log(this);
+          if(!ins){
+             
+            ins = this
+          } 
+              return ins
+         
+      }
+    }
+})()
+let fn = new Single(),
+    fntwo = new Single();
+console.log(fn  == fntwo);
+
+// 使用构造函数的默认属性
+function Fn(name){
+    if(!(typeof fn.instance == 'object')){
+        this.name = name;
+        fn.instance = this
+        return this
+    }else{
+        return  fn.instance
+    }
+}
+const a1 =  new Fn(),
+        b = new Fn();
+console.log(b == a1);
+
+
+//使用立即执行函数
+let d = (function (){
+    let instance = null;
+   return function(name){
+    if(!instance) instance = this
+    else return instance
+   }
+})()
+let a = new  d('data'),
+    c = new d('ddd');
+console.log(a == c );
+</script>
+</html>

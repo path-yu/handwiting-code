@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <style>
+    </style>
+</head>
+<body>
+<div id='app'>
+<table>
+   <tbody>
+       <tr>
+           <th>姓名</th>
+           <th>年龄</th>
+           <th>性别</th>
+       </tr>
+      
+   </tbody>
+</table>
+    <button>点击获取数据</button>
+
+    <ul class="message">
+       
+    </ul>
+</div>
+    	<script src='https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+    <script>
+         // 进阶版观察者
+            class Observer {
+                constructor() {
+                    //储存订阅者
+                    this.subscribes = {}
+                }
+                //订阅
+                on(name, callback) {
+                    // 如果不存在这个订阅者就添加这个订阅者
+                    if (!this.subscribes[name]) {
+                        this.subscribes[name] = [];
+                    }
+                    this.subscribes[name].push(callback)
+                }
+                // 发布
+                emit(name, msg) {
+                    // 如果不存在这个订阅者就打断函数执行
+                    if (!this.subscribes[name])  throw new Error('未找到订阅者');;
+                    this.subscribes[name].forEach(fn => fn(msg))
+                }
+                //解绑
+                off(name, callback) {
+                    let callbackList = this.subscribes[name];
+                    if (!callbackList) throw new Error('未找到订阅者');
+                    let index = callbackList.indexOf(callback);
+                    if (index === 1) return
+                    else callbackList.splice(index, 1)
+                }
+            }
+           
+            let observer = new Observer();
+            function update1(msg) {
+                let html = msg.reduce((t,v) => {
+                    let tr = '<tr>'
+                    Object.values(v).forEach(val => tr += `<td>${val}</td>` )
+                    tr += '</tr>';
+                    t += tr
+                    return t
+                },"")
+                $('tbody').append(html)
+            }
+            function update2(msg) {
+                let html = msg.reduce((t,v) => {
+                    t += `<li>姓名: <b>${v.name}</b>--年龄: <b>${v.age}</b>--性别: <b>${v.sex}</b></li>`
+                    return t
+                },"")
+                console.log(html);
+               $('.message').html(html)
+            }
+            function update3() {
+                console.log(33);
+            }
+            observer.on('listenData', update1)
+            observer.on('listenData', update2)
+            observer.on('listenData', update3)
+
+           function ajax(){
+                $.ajax({
+                   url: 'http://localhost:3001/teacher',
+                   dataType: "json",
+                   type: 'get',
+                   success(msg) {
+                       // 发布
+                      observer.emit('listenData',msg)
+                   }
+               })
+           }
+           $('button').on('click',ajax)
+    </script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="Zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body{font-family: "Microsoft YaHei",serif;}
+        body,dl,dd,p,h1,h2,h3,h4,h5,h6{margin:0;}
+        ol,ul,li{margin:0;padding:0;list-style:none;}
+        img{border:none;}
+
+        p{
+            margin: 20px 10px;
+        }
+        span{
+            color: red;
+            font-weight: bolder;
+        }
+    </style>
+</head>
+<body>
+    <h3>我张三今天要吃苹果！</h3>
+    <p class="buy">
+        买：
+        <input type="button" value="买个苹果">
+        <input type="button" value="买个梨子">
+    </p>
+    <p class="eat">
+        吃：
+        <input type="button" value="吃个苹果">
+        <input type="button" value="吃个梨子">
+    </p>
+    <p class="count">
+        <b>张三</b>还剩：<span>0</span>个苹果，<span>0</span>个梨子
+    </p>
+    <p class="total">
+        <b>朱雀雀</b>总共还剩：<span>0</span>个水果。
+    </p>
+    <div class="box"></div>
+<script>
+   const MVC = (function () {
+    //   Model
+    let  Model= (function () {
+        // 保存各个水果的数量
+        let data = [1,2];// [苹果,梨子]
+        return {
+            // 数据更新接口
+            updateData(bool,index){
+               this.handleData(bool,index);
+               //发布
+                Model.Observer.emit(data);
+            },
+            // 处理数据接口
+            handleData(index,bool){
+                if(bool){
+                    data[index] === 20 ? alert('只能吃20个') :'';
+                    // 限定水果的数量不能超过20
+                    data[index] = Math.min(20,++data[index]);
+                }else{
+                    data[index] === 0 ? alert('都没了还吃') :'';
+                    // 限定水果的数量不能小于0
+                    data[index] = Math.max(0,--data[index]);
+                }
+            },
+            // 提供观察者接口
+            Observer:(function () {
+               let callbackArr = [];
+               return {
+                   // 订阅
+                   on(callback){
+                       callbackArr.push(callback);
+                   },
+                   // 发布
+                   emit(data){
+                       // 遍历执行对应的回调函数
+                       callbackArr.forEach(cb => cb(data));
+                   }
+               }
+            })(),
+            // 获取数据接口
+            getData(){
+                return data
+            }
+        }
+    })();
+    //Controller
+    let View = (function () {
+        // 获取对应的DOM;
+        const  aCount = document.querySelectorAll('.count span'),
+               oTotal = document.querySelector('.total span');
+        return {
+            // 更新视图
+            updateView(data){
+                aCount.forEach((item,index) =>{
+                    aCount[index].textContent = data[index];
+                });
+                oTotal.textContent = data.reduce((total,cur) => total+cur);
+            }
+        }
+    })();
+    let Controller = function () {
+        // 对应的DOM获取
+        let aButBuy = document.querySelectorAll('.buy input'),
+            aButEat = document.querySelectorAll('.eat input');
+        aButBuy.forEach((item,index) =>{
+            item.onclick = function () {
+                // 触发数据更新
+                Model.updateData(index,true)
+            }
+        });
+        aButEat.forEach((item,index) =>{
+            item.onclick = function () {
+                // 触发数据更新
+               Model.updateData(index,false)
+            }
+        });
+    };
+    return{
+        init(){
+            //初始化视图
+            View.updateView(Model.getData());
+            // 添加控制器
+            Controller();
+            // 订阅View的更新
+            Model.Observer.on(View.updateView);
+        }
+    }
+   })();
+   MVC.init();
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+const Queue = (function (){
+    // 定义一个独一无二的键, 避免外界可以利用键直接访问数据
+    let  sym = Symbol();
+
+    // 用来丰富储存的数据
+    class Priority{
+        constructor(ele,pri) {
+            this.element = ele;
+            this.priority = pri;
+        }
+    }
+   return class  {
+        constructor() {
+            this[sym] = [];
+        }
+       /*
+       *  入队时进行根据优先级进行排序
+       *  遍历当前队列,如果新插入的元素的优先级比当前遍历
+       * 的元素优先级小即跳过,直到找到优先级小比插入元素的优先级小的为止
+       * 则插入当前元素的前面
+       * */
+        enqueue(ele,pri){
+            let node = new Priority(ele,pri);
+            let index = 0;
+            while (index < this.size()){
+                if(this[sym][index].priority < pri) break;
+                index++
+            }
+            //利用数组splice方法进行插队
+            this[sym].splice(index,0,node)
+        }
+       dequeue(){
+           return this[sym].shift().element;
+       }
+       first(){
+           return this[sym][0].element;
+       }
+       clear(){
+           this[sym] = [];
+       }
+       size(){
+           return this[sym].length;
+       }
+       print(){
+            // 打印排队信息
+           while (this.size())
+               console.log( this.dequeue());
+       }
+   }
+})();
+let queue = new Queue();
+queue.enqueue("张三",1);
+queue.enqueue("李四",2);
+queue.enqueue("王五",3);
+queue.print()
+</script>
+</body>
+</html>

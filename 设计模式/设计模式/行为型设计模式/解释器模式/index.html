@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="box">
+        <p>1</p>
+        <p>2</p>
+        <div></div>
+        <p class="age"></p>
+    </div>
+    <div class="divBox"></div>
+    <div class="divBox"></div>
+    <div class="divBox"></div>
+    <div class="divBox"></div>
+    <div class="divBox"></div>
+    <script>
+
+     
+        function $(selector){
+            if(selector.includes(':odd')){
+                const [select] = selector.split(':');
+                let eleList = document.querySelectorAll(select);
+                return  [...eleList].filter((ele, index) => (index + 1) % 2 === 1)
+            }else{
+                return document.querySelectorAll(selector)
+            }
+        }
+        console.log($("#box>p:odd"))
+        console.log($('.divBox:odd'))
+        
+      
+
+        function createDom(ruleStr) {
+            let fragment = document.createDocumentFragment();
+            let reg = /([a-z]+)>([a-z]+)\*(\d)\{(.+?)\}/i,
+                res = ruleStr.match(reg);
+            let rootEle = document.createElement(res[1]);
+            "*".repeat(res[3]).split('').forEach(item =>{
+                let p = document.createElement(res[2])
+                p.textContent = res[4]
+                rootEle.append(p)
+            })
+            fragment.append(rootEle)
+            return fragment
+        }
+       let dom =  createDom('div>p*4{这是一个p标签}');
+        document.body.appendChild(dom)
+
+
+
+
+        // LowerCase
+        let getPath = (function(){
+            // 获取与DOM元素标签名相同的同级DOM元素个数
+            function getSiblingsCount(dom){
+                let count = 0;// 记录个数
+                // 记录当前兄弟节点的标签名, toLowerCase将小写转为大写
+                let nodeName = dom.nodeName.toLowerCase();
+                while(dom){
+                    // 如果相等则count++
+                    if(dom.nodeName.toLowerCase() === nodeName){
+                        count++
+                    }
+                    // 查找上一个兄弟节点
+                    dom = dom.previousElementSibling;
+                }
+                // 返回对应个数的字符串, 通过拼接字符串将数字转为正常
+                return count === 1 ? "" : count+"";
+            }
+            return function(dom){
+                // 限制措参数的类型
+                 if (!(dom instanceof HTMLElement)) throw new Error("参数不是DOM节点");
+                 // 最终返回的DOM路径结果
+                 let path = [];
+                 // 如果上一个节点不为document则一直查找父节点
+                 while(dom !== document){
+                     //从数组的前面追加对应的结果
+                     path.unshift(dom.nodeName.toLowerCase()+getSiblingsCount(dom));
+                     dom = dom.parentNode;
+                 }
+                 return path
+            }
+        })()
+      console.log(getPath(document.querySelector('.age')))
+    </script>
+</body>
+</html>

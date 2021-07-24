@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <script>
+
+        // 原型继承
+        // es5 写法
+        function F(){
+            this.name = "class"
+        };
+        F.prototype.sayHi = function(){};
+
+        function G(){
+            // 将F构造函数的
+            F.call(this)
+        }
+        //空函数 
+        function Fn(){};
+        // 将 Fn的原型 指向F 的原型
+        Fn.prototype = F.prototype;
+        // 将 G构造函数的原型指向指向一个新的fn对象, 正好指向了F
+        G.prototype = new F();
+        console.dir(G);
+        // 将 G函数的原型构造函数修复为G, 因为上面用prototype将G的构造函数的指向了Fn的函数
+        G.prototype.constructor = G;
+        // 继续在G函数身上定义方法
+        G.prototype.sayName = function(){
+            console.log(this.name);
+        }
+        let f = new F();
+        console.log(new G());
+        console.dir(f)
+
+
+        // Es6 写法
+        class Parent{
+            constructor(age){
+                this.age = age
+            }
+            sayAge(){
+                console.log(this.age);
+                return this.age
+            }
+        }
+        class Child extends Parent{
+            constructor(age){
+                super(age)
+            }
+        }
+        let child = new Child(43);
+        console.log(child.sayAge());
+    </script>
+</body>
+</html>

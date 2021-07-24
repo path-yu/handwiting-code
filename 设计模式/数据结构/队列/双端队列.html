@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script>
+
+    //. 双端队列
+    let Queue = (function(){
+        let symbol = Symbol();
+        return class{
+            constructor(){
+                this[symbol] = [];
+            }
+            //从队列前端入队
+            enqueueFront(ele){
+                this[symbol].unshift(ele);
+            }
+            //从队列后端入队
+            enqueueBack(ele){
+                this[symbol].push(ele);
+            }
+            //从队列列头出队
+            dequeueFront(){
+                return this[symbol].shift();
+            }
+            //从队列列尾出队
+            dequeueBack(){
+                return this[symbol].pop();
+            }
+            //返回列首数据，不删除
+            peekFront(){
+                return this[symbol][0];
+            }
+            //返回列尾数据，不删除
+            peekBack(){
+                return this[symbol][this.size()-1];
+            }
+            //返回队列长度
+            size(){
+                return this[symbol].length;
+            }
+            //清空队列
+            clear(){
+                this[symbol] = [];
+            }
+            //按照队列排列顺序依次打印元素
+            print(){
+                this[symbol].forEach(v=>{
+                    console.log(v);
+                });
+            }
+        }
+    })();
+</script>
+</body>
+</html>

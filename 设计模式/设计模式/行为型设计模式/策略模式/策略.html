@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <style>
+    </style>
+</head>
+
+<body>
+    <div id='app'></div>
+
+    <script>
+        /* 
+            策略模式 策略模式调用了一系列的算法, 并将每一个算法封装起来,而且使他们可以相互替换
+            而且使他们可以相互替换. 且具有有一定独立性, 不会随客户端而变化而变化
+            *一系列的算法，可以相互替换*，也就是说为了同一个目的，可能采取的算法不一样，同时要体现出*独立性*。
+        */
+        // 玩家类
+        class Player {
+            constructor() {
+                this.totalCost = 0;
+                this.level = "C"
+            }
+            consume(price) {
+                // 计算消费的总价;
+                this.totalCost += price
+                let result = strategy.calc(this.level, price);
+                this.getLevel();
+                return result
+            }
+            getLevel() {
+                this.level = levelStrategy.calc(this.totalCost)
+            }
+        }
+        // 计算level 策略类
+        const levelStrategy = (function () {
+            let s = [{
+                    maxTotalCost: 5000,
+                    level: "S"
+                },
+                {
+                    maxTotalCost: 3000,
+                    level: "A"
+                },
+                {
+                    maxTotalCost: 2000,
+                    level: "B"
+                },
+                {
+                    maxTotalCost: 0,
+                    level: "C"
+                }
+            ];
+            return {
+                calc(totalCost) {
+                    for (const v of s) {
+                        if (totalCost >= v.maxTotalCost) {
+                            return v.level
+                        }
+                    }
+                }
+            }
+        })()
+        // 折扣策略类
+        const strategy = (function () {
+            let s = {
+                S(price) {
+                    return price * 0.85
+                },
+                A(price) {
+                    return price * 0.9;
+                },
+                B(price) {
+                    return price * 0.95;
+                },
+                C(price) {
+                    return price;
+                }
+            };
+            return {
+                addSty(name, fn) {
+                    s[name] = fn
+                },
+                //计算策略所定义最终价格的接口
+                calc(sty, price) {
+                    console.log(sty,price)
+                    if (s[sty]) {
+                        return s[sty](price)
+                    } else {
+                        throw new Error('对应的优惠策略不存在')
+                    }
+                }
+            }
+        })();
+        let player = new Player();
+        console.log(player.consume(6000));
+        console.log(player.consume(100));
+
+
+        let StrategyProduct = {
+
+        }
+    </script>
+</body>
+
+</html>

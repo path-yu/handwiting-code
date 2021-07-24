@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <style>
+    </style>
+</head>
+
+<body>
+    <div id='app'></div>
+    <p class="displayer"></p>
+    <button class="switch">开关</button>
+    <script>
+        /* 
+            状态模式, 当对象内部状态发生了改变, 它的行为也对应的
+            发生改变, 使之看上去像是改变了这个对象
+        */
+        /* 
+          当需求有多种状态时, 并在某些条件会从一种状态变成另一种状态, 使用状态模式就很适合
+  
+        */
+        const displayer = document.querySelector('.displayer'),
+                Switch = document.querySelector('.switch');
+        let bool = false;
+        Switch.addEventListener('click', ev =>{
+            bool = !bool;
+            updater()
+        })
+        function updater(){
+            if(bool)  displayer.innerText = '开启';
+            else displayer.innerText = '关闭';
+            displayer.textContent
+        }
+        updater();
+        /* 
+            假设某个状态对应的代码需要修改, 或者像我添加新的状态, 我们就得修改整个Updater
+            状态与状态模块之间不够独立, 很显然他不是一个很稳定的方法, 违背了开闭原子,
+             我们可以使用状态模式将代码变得更加舒服
+        */
+        /* 
+            在状态模式中, 类的行为是基于它的状态改变的, 这种类型的设计模式属于行为型设计模式
+        */
+        let stateMachine = {
+            // 状态机
+            FSM: {
+                on: {
+                    to: 'weak',
+                    action() {
+                        console.log("状态从on变为weak");
+                        displayer.innerText = 'weak';
+                    }
+                },
+                 weak: {
+                    to: 'off',
+                    action() {
+                        console.log('状态从weak到off');
+                        displayer.innerText = 'off';
+                    }
+                },
+                off: {
+                    to: 'on',
+                    action() {
+                       console.log('状态从off到on');
+                        displayer.innerText = 'on';
+                    }
+                },
+               
+            },
+            //当前状态
+            currentState: 'off',
+            // 初始化事件
+            init() {
+                let Switch = document.querySelector('.switch');
+                Switch.onclick = ev => {
+                    console.log(this)
+                    this.transition()
+                }
+            },
+            //状态切换
+            transition() {
+                let s = this.FSM[this.currentState];
+                this.currentState = s.to;
+               s.action()
+            },
+            addState(from,to,action){
+                this.FSM[from] = {
+                    to,
+                    action,
+                }
+                    console.log(this.FSM)
+            }
+        }
+         stateMachine.addState('left', 'right', function () {
+                console.log('1111')
+        })
+        console.log(stateMachine.init());
+     
+        // 状态管理容器
+        let StateMachine = {
+            FSM:{// 状态机
+                top:{
+                    to:'center',
+                    action(){
+                        console.log('状态从top变为center')
+                    }
+                },
+                center:{
+                    to:'bottom',
+                    action(){
+                          console.log('状态从center变为bottom')
+                    }
+                },
+                bottom:{
+                    to:'top',
+                    action(){
+                        console.log('状态bottom变为top')
+                    }
+                }
+            },
+            // 当前状态
+            currentState:'top',
+            transitionState(){
+                let State = this.FSM[this.currentState];
+                this.currentState = State.to;
+                State.action()
+            },
+            init(){
+                let btn = document.querySelector()
+            }
+        }
+    </script>
+</body>
+
+</html>

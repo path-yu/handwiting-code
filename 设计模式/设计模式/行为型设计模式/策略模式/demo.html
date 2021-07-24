@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box{
+            width: 400px;
+            height: 400px;
+            background-color: #cccccc;
+            transition: 0.3s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="box"></div>
+
+    <script>
+        let box = document.querySelector('.box');
+        let Strategy = (function (){
+            let s ={
+                moveY(pxsize){
+                    box.style.transform = `translateY(${pxsize}px)`
+                },
+                zoom(size){
+                    box.style.transform = `scale(${size})`
+                },
+                changeColor(color){
+                    box.style.backgroundColor = color
+                },
+                changeOpacity(size){
+                    box.style.opacity = size
+                }
+            };
+            return {
+               run(type,data){
+                    s[type](data)
+               },
+                addStr(type, callback) {
+                    s[type] = callback
+                }
+            }
+        })()
+        box.addEventListener('click', ev =>{
+            // Strategy.run('moveY',100);
+            // Strategy.run('changeOpacity',0.78)
+        });
+        function run(type='changeOpacity',data){
+            if(type ===  'moveY'){
+                 box.style.transform = `translateY(${data}px)`
+            }else if(type === 'zoom'){
+                 box.style.transform = `scale(${data})`
+            }else if(type === 'changeColor'){
+                 box.style.backgroundColor = data
+            }else if(type === 'changeOpacity'){
+                box.style.opacity = data
+            }
+        }
+        box.addEventListener('click' ,ev =>{
+            run('zoom',2)
+        })
+        Strategy.addStr('age',(data)=>{
+            console.log(data)
+        })
+        Strategy.run('age',11)
+    </script>
+</body>
+</html>

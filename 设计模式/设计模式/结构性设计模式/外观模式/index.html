@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        #app {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div id='app'></div>
+
+    <script>
+        /*  
+            以添加DOM事件为例. 我们是不推荐直接使用on绑定事件的,因为这是DOM0级事件
+            下次在添加时就会覆盖上一次的, 使用我们使用DOM2级事件addEventListener, 而ie
+            是不兼容的, 需要使用attachEvent的 从而推荐一个click事件的写法如下
+        
+         */
+        const oDIV = document.querySelector('#app');
+        function click() {
+            // code
+        }
+        if (document.addEventListener) {
+            oDIV.addEventListener('click', click, false)
+        } else if (document.attachEvent) {
+            oDIV.attachEvent('onclick', click)
+        } else {
+            oDIV.onclick = click;
+        }
+        // 很显然这么写是非常麻烦的所以我们可以封装一下
+        function addEvent(selector, evnetName, callback) {
+            const ele = document.querySelector(selector);
+            if (document.addEventListener) {
+                ele.addEventListener(evnetName, callback, false)
+            } else if (document.attachEvent) {
+                oDIV.attachEvent("on" + evnetName, callback)
+            } else {
+                oDIV["on" + evnetName] = callback;
+            }
+        }
+        // addEvent('#app', 'click', function (ev) {
+        //     console.log(ev.target);
+        // })
+
+        // demo;
+        // JavaScript的兼容部分缺失比较多, 所以我们可以将众多兼容操作综合起来, 这样我们就通过我刚模式封装了一下小型的库
+
+        var $ = {
+            getDom: function (selector) {
+                return document.querySelector(selector)
+            },
+            on: function (selector, evnetName, callback) {
+                var ele = this.getDom(selector);
+                if (document.addEventListener) {
+                    ele.addEventListener(evnetName, callback, false)
+                } else if (document.attachEvent) {
+                    ele.attachEvent("on" + evnetName, callback)
+                } else {
+                    ele["on" + evnetName] = callback;
+                }
+            },
+            getStyle: function(selector,attr){
+                var ele = this.getDom(selector);
+                if(window.getComputedStyle){
+                    return getComputedStyle(ele)[attr]
+                }else{
+                    return ele.currentStyle[attr]
+                }
+            }
+        }
+        $.on('#app','click',function(ev){
+            console.log(ev.clientX);
+        })
+        console.log($.getStyle('#app','width'));
+    </script>
+</body>
+
+</html>

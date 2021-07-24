@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<script>
+
+class MySet{
+    constructor(){
+        this.items = {}
+    }
+    add(element){
+        if(!this.has(element)){
+            Reflect.set(this.items,element,element)
+            return this;
+        }
+        return false;
+    }
+    delete(elemennt){
+        if(this.has(elemennt)){
+            Reflect.deleteProperty(this.items,this.items[elemennt]);
+            return true;
+        }
+        return false
+    }
+    has(elemennt){
+        return Reflect.has(this.items,elemennt);
+    }
+    size(){
+        return Object.keys(this.items).length;
+    }
+    clear(){
+        this.items = {};
+    }
+    values(){
+        return Object.values(this.items)
+    }
+    union(otherSet){
+        const unionSet = new MySet();
+        return  [...this.values(),...otherSet.values()].reduce((total,val) =>{
+            total.add(val);
+            return total
+        }, unionSet)
+    }
+    intersection(otherSet){
+        const intersection = new MySet();
+        this.values().forEach(val =>{
+            if(otherSet.has(val)){
+                intersection.add(val)
+            }
+        })
+        return intersection;
+    }
+    difference(otherSet){
+        const differenceSet = new MySet();
+        this.values().forEach(val =>{
+            if(!otherSet.has(val)){
+                differenceSet.add(val)
+            }
+        })
+        return differenceSet
+    }
+    isSubsetof(otherSet){
+        console.log(otherSet)
+        if(this.size() > otherSet.size()) {
+            return false;
+        }
+        for(let val of this.values()){
+            if(!otherSet.has(val)){
+                return false
+            }
+        }
+        return true
+    }
+}
+let set = new MySet();
+set.add(43).add(45).add(52);
+console.log(set.size())//3;
+console.log(set.has(43))//true
+// console.log(set.delete(43));//true.
+console.log(set.has(43))//false
+console.log(set.values())//[45,52]
+
+let a = new MySet();
+a.add(43).add(53).add(52).add(43434).add(45);
+// console.log(set.difference(a).values());
+console.log(set.isSubsetof(a))
+</script>
+</body>
+</html>

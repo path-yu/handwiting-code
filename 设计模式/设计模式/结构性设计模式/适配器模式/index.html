@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id ="app">
+       <table>
+           <thead>
+               <th>姓名</th>
+               <th>年龄</th>
+               <th>年龄</th>
+           </thead>
+           <tbody>
+             
+           </tbody>
+       </table>
+    </div>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.20.0/axios.min.js"></script>
+
+    <script>
+        // 定义 将一个类的接口转换为另外一个接口, 以满足用户需求, 解决接口不一样产生的兼容问题
+    new Promise((reslove, reject) => {
+        // 获取数据
+            $.ajax({
+                url: 'http://localhost:3001/teacher',
+                success(res) {
+                    reslove(res)
+                },
+                fail(err) {
+                    reject(err)
+                }
+            })
+        })
+        //处理数据
+         .then(res => {
+            // 以前的数据格式为 ['张三',434,'男']
+            // 现在的数据格式为 {name:'张三',age:434,sex:男}
+            // 后面操作数据渲染页面的逻辑代码参数类型已经固定, 修改逻辑代码很麻烦
+            // 我们可以使用适配器,将参数类型转换为可用的类型
+            
+            //  res = [res.name,res.age,res.sex]  // 适配器 适配  {name:'张三',age:434,sex:男} 数据格式
+
+            // 如果后台传来的数据为 [{name:'xx',age:xx,sex:xx},{name:'xx',age:xx,sex:xx}]
+            res =  res.reduce((t,v) =>{
+                t = [...t,...Object.values(v)]
+                return t
+            },[])
+           return res
+            })
+            //将数据渲染到页面
+        .then(res => {
+            console.log(res);
+             let trCount = (res.length) / 3;
+            let trHtml = `<tr>x</tr>`.repeat(trCount);
+            let reg = /<(tr)>(x?)<\/\1>/i
+            let tdHtml = res.reduce((t,v,i) => {
+                 t += `<td>${v}</td>`;
+                if((i + 1) %3 === 0){
+                    trHtml =  trHtml.replace(reg,`<tr>${t}</tr>`);
+                    t = ""
+                }
+               return t
+            } ,"");
+         
+          let tr = `<tr>${tdHtml}</tr>`
+            console.log(trHtml);
+          $('tbody').html(trHtml);
+
+        })
+        /* 
+            总结由于各种原因(结构升级, 优化代码等) 导致接口和之前的不一样, 而重构整个代码起来很麻烦,
+            所以我们通过适配器将代码接口转换一下以保证能正确的使用,这就是适配器模式
+
+            假设我们在开发时,后台的数据格式发生了改变, 导致我们之前通过数据渲染到页面的逻辑代码无效
+            而这时我们如果重构逻辑代码,会很麻烦, 所以我们可以通过适配器将数据格式转换成之前的数据格式
+
+           如iphone耳机接口不合适需要搞个转化器来接耳机这种，这个转换线，就是一个典型的适配器。
+         */
+
+
+        //  场景一
+        /* 
+            假如我们现在有一个手机类 phone类, 它有一个recharge(充电)方法, 但它只支持typec数据线,
+            此时我们有一个数据线类Android, 如果此时我们想通过Android类来调用phone的方法时
+            此时就需要一个转接头, 此时转接头就是一个适配器
+         */
+         class Phone{
+             constructor(){
+                 this.type = "typeC"
+             }
+             recharge(USB){
+                if(USB.type === "typeC"){
+                    console.log('正在充电中');
+                }
+             }
+         }
+         class Android{
+             constructor(){
+                 this.type = "Android"
+             }
+         }
+         class Change{
+             constructor(){}
+             connect(phone,usb){
+                if(phone.type === "typeC" || usb.type3 === "Android"){
+                    phone.recharge({type:'typeC'})
+                }
+             }
+         }
+         let phone = new Phone(),
+            android = new Android(),
+            change = new Change();    
+         console.log(change.connect(phone,android));
+
+         /* 
+            某个项目中我们用到了axios库发起了ajax请求,获取到了数据data,data是一个数组格式,
+            而后端更新了,将返回的数据换成了键值对格式,此时我们修改用来写好的代码成本比较大
+            所以我们可以加一段适配代码
+          */
+          axios.get("http://localhost:3001/teacher")
+                .then(res =>{
+                    res = res.data
+                    done(res)
+                })
+               
+        function done(data){
+            data.forEach(item =>{
+                console.log(item);
+            })
+        }
+      /* 
+      
+        什么是 适配器模式
+        let data = require
+       */
+    </script>
+</body>
+
+
+</html>

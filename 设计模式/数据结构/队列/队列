@@ -1,0 +1,427 @@
+## 1. 队列
+
+### 1.1 概念
+
+队列是一种特殊的线性表,特殊之处在于它只允许在某一端添加数据,在另一端删除数据.进行插入操作的端称为队尾, 进行删除操作的端称为队头.
+
+队列可以类比我们现实生活中的排队场景, 先排队总是先出队.符合队列的先进后出的原则.
+
+在电影院,自助餐厅,杂货店收银台,我们都会排队.排在第一位的人会先接受服务,
+
+### 1.2创建基本结构
+
+队列的基本功能需求如下
+
+```
+1. 入队 (enqueue);
+2. 出队 (dequeue);
+3. 返回队列首端数据, 但不删除(first);
+4. 清空队列 (clear)
+5. 返回队列长度 (size);
+6. 返回队列是否为空 (isEmpty);
+```
+
+#### 1. 单链队列
+
+**分析**单链队列利用数组的push方法将元素追加到数组的最后来实现入队, 利用shift方法来删除第一次元素并返回来实现出队.
+
+```js
+// 单向队列
+class Queue {
+    constructor() {
+        this.queue = []
+    }
+    //入队
+    enQueue(...items){
+      return items.map(item =>  {
+          this.queue.push(item);
+            return item
+        })
+    }
+    // 出队
+    deQueue(){
+        return this.queue.shift()
+    }
+    // 返回队头
+    first(){
+        return this.queue[0];
+    }
+    //清空队列
+    clear(){
+        this.queue = [];
+    }
+    // 返回队列的长度
+    size(){
+        return this.items.length;
+    }
+    //队列是否为空
+    isEmpty(){
+        return this.size() === 0
+    }
+}
+```
+
+下面我们简单使用这个队列来模拟排队
+
+```js
+let queue = new Queue();
+console.log("队列是否为空" + queue.isEmpty())
+console.log('入队的人'+ queue.enQueue('A', 'B', 'C'));
+console.log('出队的人' + queue.deQueue());
+console.log('出队的人' + queue.deQueue());
+console.log('出队的人' + queue.deQueue());
+console.log("队列是否为空" + queue.isEmpty())
+```
+
+控制台打印如下结果
+
+![image-20201115100514891](C:/Users/86158/AppData/Roaming/Typora/typora-user-images/image-20201115100514891.png)
+
+#### 2 .循环队列
+
+因为单链队列在出队操作时我们取出了队首,也就是array[0],那么后面的元素都是一个一个往前摞位置,都摞完位置后  花费的自然就是O(n)的时间复杂度, 所以引入了循环队列.循环队列的出队操作平均是O(1)的时间复杂度.
+
+**分析** 循环队列在进行新增元素操作即入队时,首先判断队列是否为满,如果已蛮则扩展数组,如果不满则将新元素赋值队尾,并让队尾的指针rear++, 如果已经排列到数组最后的位置,则rear指针重新指向头部.在进行删除操作即出队操作时,需要判断队列是否为空,然后将队头赋值给返回, 并将front指针往后移一位. 如果已经移到了队尾的位置则把front指针重新指向到头部.
+
+```js
+class SqQueue {
+    constructor(length) {
+        this.queue = new Array(length+1);
+        // 队头
+        this.front = 0;
+        //队尾
+        this.rear = 0;
+        // 当前队列大小
+        this.size =  0
+    }
+    // 入队
+    enQueue(item){
+        /*
+        * 判断队尾+1 是否为队头
+        * 如果是就代表需要扩展数组
+        * % this.queue.length是防止数组越界
+        * */
+        if(this.front === (this.rear +1) % this.queue.length){
+            // 对数组进行扩容, 长度翻2倍并加1
+            this.resize(this.getSize() * 2 + 1);
+        }
+        //将新元素赋值给队尾
+        this.queue[this.rear] = item;
+        // 队列长度++
+        this.size++;
+        //rear指针往后移一位 并判断是否已经排列到最后的位置,如果是则重新指向头部
+        this.rear = (this.rear + 1) % this.queue.length;
+    }
+    //出队
+    deQueue(){
+        if(this.isEmpty())  throw Error('Queue is Empty');
+        // 保存队头元素
+        
+        let res = this.queue[this.front];
+        //清空当前队头元素
+        this.queue[this.front] = null;
+        // front指针后移, 如
+        this.front = (this.front + 1) % this.queue.length;
+        this.size--;
+        /*
+        * 判断当前队列大小是否过小.
+        * 为了保证不浪费空间,在队列空间等于总长度的四分之一时
+        * 且不为2是缩小总长度为当前的一半
+        * */
+        if(this.size === this.getSize() && this.getSize() / 2 !== 0){
+            console.log(22)
+            this.resize(this.getSize() / 2)
+        }
+        return res
+    }
+    // 获取队头
+    getHeader(){
+        if(this.isEmpty())  throw Error('Queue is Empty');
+        return this.queue[this.front];
+    }
+    // 获取队列个数
+    getSize(){
+        return this.queue.length -1
+    }
+    //重新计算数组
+    resize(length){
+        let q = new Array(length);
+        for(let i = 0;i < length; i++){
+            // 从原队列的头节点开始, 依次移动front指针
+            // 并跟原队列长度进行求模, 防止越界, 从原数组获取不到对应的元素
+            q[i] = this.queue[(i + this.front) % this.queue.length]
+        }
+        // 将数组扩容, 并将front指向0, rear指向最后
+        this.queue = q;
+        this.front = 0;
+        this.rear = this.size;
+    }
+    // 返回队列是否为空
+    isEmpty(){
+        return this.front === this.rear
+    }
+}
+```
+
+#### 3. 优先队列
+
+优先队列非常简单, 根据优先级来决定插入的顺序,就好像登记时的贵宾通道一样,
+
+```js
+const Queue = (function (){
+    // 定义一个独一无二的键, 避免外界可以利用键直接访问数据
+    let  sym = Symbol();
+
+    // 用来丰富储存的数据
+    class Priority{
+        constructor(ele,pri) {
+            this.element = ele;
+            this.priority = pri;
+        }
+    }
+   return class  {
+        constructor() {
+            this[sym] = [];
+        }
+       /*
+       *  入队时进行根据优先级进行排序
+       *  遍历当前队列,如果新插入的元素的优先级比当前遍历
+       * 的元素优先级小即跳过,直到找到优先级小比插入元素的优先级小的为止
+       * 则插入当前元素的前面
+       * */
+        enqueue(ele,pri){
+            let node = new Priority(ele,pri);
+            let index = 0;
+            while (index < this.size()){
+                if(this[sym][index].priority < pri) break;
+                index++
+            }
+            //利用数组splice方法进行插队
+            this[sym].splice(index,0,node)
+        }
+       dequeue(){
+           return this[sym].shift().element;
+       }
+       first(){
+           return this[sym][0].element;
+       }
+       clear(){
+           this[sym] = [];
+       }
+       size(){
+           return this[sym].length;
+       }
+       print(){
+            // 打印排队信息
+           while (this.size())
+               console.log( this.dequeue());
+       }
+   }
+})();
+let queue = new Queue();
+queue.enqueue("张三",1);
+queue.enqueue("李四",2);
+queue.enqueue("王五",3);
+queue.print()
+```
+
+ 我们通过在元素入队时传递了第二个参数即优先级,然后内部利用优先级来对元素的顺序进行重新排列, 我们可以很清楚得看到上面的代码在控制台依次打印出王五, 李四, 张三.
+
+#### 4. 双端队列
+
+**双端队列** (deque, 或称Double-ended queue), 是一种允许我们同时从前端和后端添加和删除的元素的特殊队列.
+
+双端队列在现实生活中的简答例子有,餐厅中排队的队伍等.举个例子, 一个刚刚买了票的人如果只是还需要在问一些简单的信息,就可以直接回到队伍的头部.另外在队伍的末尾的人如果赶时间,它可以直接离开队伍.
+
+```js
+  //双端队列
+    let Queue = (function(){
+        let symbol = Symbol();
+        return class{
+            constructor(){
+                this[symbol] = [];
+            }
+            //从队列前端入队
+            enqueueFront(ele){
+                this[symbol].unshift(ele);
+            }
+            //从队列后端入队
+            enqueueBack(ele){
+                this[symbol].push(ele);
+            }
+            //从队列列头出队
+            dequeueFront(){
+                return this[symbol].shift();
+            }
+            //从队列列尾出队
+            dequeueBack(){
+                return this[symbol].pop();
+            }
+            //返回列首数据，不删除
+            peekFront(){
+                return this[symbol][0];
+            }
+            //返回列尾数据，不删除
+            peekBack(){
+                return this[symbol][this.size()-1];
+            }
+            //返回队列长度
+            size(){
+                return this[symbol].length;
+            }
+            //清空队列
+            clear(){
+                this[symbol] = [];
+            }
+            //按照队列排列顺序依次打印元素
+            print(){
+                this[symbol].forEach(v=>{
+                    console.log(v);
+                });
+            }
+        }
+    })();
+```
+
+
+
+### 1.3 队列结构的应用
+
+队列是一种极其基础的数据结构,不管在哪都能够运用到,通常需要配合其他代码才能实现强大的功能的功能.比如整个JavaScript的运行机制其实就是单线程, 因为是单线程,所以多任务之间都是通过队列的方排然后在执行.在借助事件循环实现这个JavaScript的强大功能.比如jquery中的animate方法最基本的结构就是使用了队列.所以说我们无时无刻不在用着队列, 因为它实在太常用太实用了,只不过,使用时的api已经写好了,而不需要我们定义实现.
+
+#### 1. 基于队列实现类似于jq的动画队列.
+
+```js
+ // 单向队列
+    class Queue {
+        constructor() {
+            this.queue = []
+        }
+        //入队
+        enQueue(...items){
+            return items.map(item =>  {
+                this.queue.push(item);
+                return item
+            })
+        }
+        // 出队
+        deQueue(){
+            console.log(this)
+            return this.queue.shift()
+        }
+        // 返回队头
+        first(){
+            return this.queue[0];
+        }
+        //清空队列
+        clear(){
+            this.queue = [];
+        }
+        // 返回队列的长度
+        size(){
+            return this.queue.length;
+        }
+        //队列是否为空
+        isEmpty(){
+            return this.size() === 0
+        }
+    }
+
+    const aq = (function () {
+        // 继承Queue 实现一个当前适合需求类
+        class _Queue extends  Queue{
+            constructor(props) {
+                super(props);
+                // 保存动画是否运行完成;
+                this.ifRun = false;
+            }
+            run(){
+                //如果动画还没有运行完成则打断
+                if(this.ifRun) return;
+                // 递归来完成动画队列的清空
+                this.ifRun = true;
+                // 由于自执行函数内部this默认指向window,所以我们得手动绑定this
+                (function r() {
+                    if(this.size()){
+                        // 往Promise传入executor执行者函数时
+                        // 会自动调用执行者, 动画调用完成后会执行then方法
+                        new Promise(this.deQueue())
+                            .then(res =>{
+                                console.log(res);// 动画执行完成
+                            	// 执行下一个动画队列
+                                r.call(this)
+                            })
+                    }else{
+                        this.ifRun = false;
+                    }
+                }).call(this)
+
+            };
+        }
+        //用来存储所有dom节点的动画队列
+        let animateMap = new Map();
+
+        //init类
+        class init{
+            constructor(selector) {
+                this.dom = document.querySelector(selector)
+            }
+            animate(options,time=300){
+                // 判断DOM节点是否注册过队列,如果没有则注册
+                if(!animateMap.get(this.dom)) {
+                    animateMap.set(this.dom,new _Queue())
+                }
+                // 获取DOM节点对应的动画队列
+                let queue = animateMap.get(this.dom);
+                // 动画任务入队
+                queue.enQueue((resolve) =>{
+                    this.dom.style.transition = time/1000 + "s";
+                    // 计算offsetTop. 触发页面重绘, 生成动画效果
+                    this.dom.offsetTop;
+                    for(let [key,val] of Object.entries(options)){
+                        this.dom.style[key] = val + "px";
+                    }
+                    // 动画执行完成后触发调用resolve
+                    setTimeout(resolve,time)
+                });
+                //动画队列调用
+                queue.run();
+                // 返回this 方便链式调用
+                return this
+            }
+        }
+        // 入口函数 返回一个实例对象
+        return function (selector) {
+            return new init(selector)
+        }
+    })();
+```
+
+下面我们简单测试一下
+
+此时页面有一个非常简单的box元素
+
+```html
+<div class="box"></div>
+```
+
+我们写一点css来进行装饰
+
+```css
+ .box{
+     width: 200px;
+     height: 300px;
+     background: #f46;
+   }
+```
+
+接下来我们通过上面写好的aq方法来进行调用
+
+```js
+aq('.box')
+    .animate({width:"300"})
+    .animate({height:"100"});
+```
+
+**总结** 队列是一种严格遵循先进先出的数据结构. 队列在尾部添加新元素,即入队,并在头部移除元素,即出队. 最新出队的元素必须排在队列的末尾,JavaScript的事件循环也用到了队列的数据结构,队列的数据结构在现实生活中非常常见,合理的场景下利用队列数据结构可以极大的提高我们的代码执行效率和解决问题的效率.
+

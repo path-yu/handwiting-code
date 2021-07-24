@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box{
+            width: 100px;
+            height: 200px;
+            user-select: none;
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="box"></div>
+    <script>
+
+        // 建造者模式 将一个复杂对象的构建和和它的表示分离, 使得同样的构建和创建出不同的表示
+        // 当我们构建的对象, 内部结构非常复杂时, 利用建造者模式将内部各模块分开创建就非常合适
+        let Builder = (function () {
+            function rooms(peopleCount) {
+                if(peopleCount <= 0) throw new Error("入住人数异常");
+                this.peopleCount = peopleCount < 3 ? 2 : peopleCount 
+            }
+            function budget(money){
+                if(money <= 100) throw Error("预算不足")
+                this.money = money
+            }
+            function style(style="常规风格"){
+                this.style = style 
+            }
+            return class{
+                constructor(PeopleCount,Money,Style){
+                    rooms.call(this, PeopleCount)
+                    budget.call(this, Money);
+                    style.call(this, Style)
+                }
+            }
+        })()
+
+        let house = new Builder(3,110,'中式');
+        console.log(house);
+
+        // 
+        let Container = (function (){
+            // 绑定ele元素
+             function bindElement(selector){
+                 const ele = document.querySelector(selector);
+                 this.Ele = ele
+             }
+             // 绑定dom事件
+             function bindEvent(eventName,callback){
+                 this.Ele.addEventListener(eventName,callback)
+             }
+             // 初始化设置数据
+            function initData(data){
+                if(!(data instanceof Object)){
+                    throw new TypeError('The paramter type must be an Object')
+                }
+               this.data = data
+            }
+            // 渲染数据 
+            function render(){
+                let data = JSON.stringify(this.data)
+                this.Ele.textContent = data
+            }
+            return class{
+                constructor(selector,eventName,data){
+                    bindElement.call(this,selector)
+                    bindEvent.call(this,eventName, ev =>{
+                        this.data.count++;
+                        render.call(this)
+                    })
+                    initData.call(this,data);
+                    render.call(this)
+                }
+            }
+        })()
+        let container = new Container('.box','click',{
+            count:20
+        });
+
+        let BuilddEle = ( function (params) {
+            function  createEle(eleName) {
+                this.ele = document.createElement(eleName);
+            }
+            function  setText(text) {
+                this.ele.textContent = text;
+            }
+            function  setStyle(style) {
+                Object.entries(style).forEach(([key,val]) =>{
+                    if (["width", "height"].includes(key)) {
+                        if(typeof val !== "string") throw new Error( key + '--prototype type Error')
+                        let res = this.ele.style[key] = val;
+                        if(!res.includes("px")){
+                           console.warn(key + "应该添加px结尾")
+                        }
+                    } else {
+                        this.ele.style[key] = val
+                    }
+                })
+            }
+            function setAttr(attrS){
+               Object.entries(attrS).forEach( ([key,val]) =>{
+                  this.ele.setAttribute(key,val)
+               })
+            }
+            return  class{
+              constructor(eleName,text,styleS,attrS){
+                    createEle.call(this,eleName);
+                    setText.call(this,text);
+                    setStyle.call(this, styleS);
+                    setAttr.call(this,attrS)
+              }
+              render(target){
+                  //如果传入的是一个dom元素
+                    if(target instanceof Node){
+                        target.appendChild(this.ele)
+                    }else if(typeof target === "string"){
+                        let targelEle =  document.querySelector(target);
+                        // 如果获取的dom元素为空则抛出错误
+                        if(targelEle === null) throw new Error('the target element was not obtained');
+                        targelEle && targelEle.appendChild(this.ele);
+                    }else{
+                         document.body.append(this.ele)
+                    }
+              }
+          }
+        })()
+        let style = { width: "200px", height: "200px", color: "white", backgroundColor: "red" }
+        let div = new BuilddEle('div',"ddd", style,{class:'age'});
+        div.render(".box")
+    </script>
+</body>
+</html>

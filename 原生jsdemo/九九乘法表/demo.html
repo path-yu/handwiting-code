@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="keywords" content=" ">
+		<meta name="description" content="">
+		<title>这是一个网页</title>
+		<style >
+			body{
+				margin:0;padding:0;
+				background-color:rgba(0, 0, 0, .6);
+				}
+			span{
+				width:80px;
+				padding:5px 10px;
+				margin:0 5px 5px 0;
+				border:1px solid orange;
+				text-align:center;
+				
+			}
+		</style>
+	</head>
+	<body>
+	</body>
+	<script type="text/javascript">
+	for(var i=1; i<=9; i++){
+		for( var j=1;j<=i;j++){
+		document.write('<span style="display:inline-block;color:white; ">'+j+'*'+i +'=' + (i * j)+'</span>')
+		}
+		document.write('<br></br>')
+	}
+	console.log(  )
+	for(var q=9; q>=0;q--){//行数0 1 2 3 4 5 6 7 8
+		for(var w=q;w>0;w--){// q = 0 w =9 q = 1 w = 8... q= 8 w =1
+				// document.write('<span style="display:inline-block;color:white;">'+w+'*'+q +'=' + (q * w)+'</span>')
+				document.write(`<span style="display:inline-block;color:white;">${w} *${q} = ${ w * q}</span>`)
+		}
+		document.write('<br></br>')
+	}
+
+	var arr = [9, 8, 7, 6, 5, 4, 3, 2, 1],
+		length = arr.length//获取数组的长度
+	for(var c = 0; c<length-1;c++){
+		for(var d =0;d<length-c-1;d++ ){
+			if( arr[d] >arr[d+1] ){
+				var little = arr[d]
+				arr[d] = arr[d+1]
+				arr[d+1] = little
+			}
+		}
+	}
+	console.log(arr)
+	var arr_a = [ 5, 6, 7, 4, 3, 2, 1],
+		lengtha = arr_a.length 
+	console.log(lengtha)
+	for(var z =0;z<lengtha-1;z++){
+		for(var x = 0;x<lengtha-z-1;x++){ //9-0-1 =8 9-1-1=7 9 -1-2 ...
+			if(arr_a[x] < arr_a[x+1]){
+				var list = arr_a[x]
+				arr_a[x] = arr_a[x+1]
+				arr_a[x+1] = list
+			}
+		
+		}
+		
+	}
+	console.log(arr_a)
+
+	//9 8  7 6 5 4 3 2 1 冒泡排序 :从第一个数字开始 如果后面的数字比它小 那就调换位置 
+	//897654321 879654321 876954321 876594321 876549321 876543921 876543291 876543219
+	//786543219 768543219 765843219 765483219 765438219 765432819 765432189
+	//675432189 657432189 654732189 654372189 654327189 654321789
+	//564321789 546321789 543621789 543261789 543216789
+	//453216789 435216789 432516789 432156789
+	//342156789 324156789 321486789
+	//231465789 213456789
+	//123456789
+	
+
+
+
+
+
+
+
+	</script>
+</html> 

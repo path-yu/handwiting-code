@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="keywords" content=" ">
+		<meta name="description" content="">
+		<title>这是一个网页</title>
+		<style >
+			body{
+				margin:0;padding:0;
+				background-color:rgba(0, 0, 0, .6);
+				}
+			.red{
+				color:red;
+			}
+			.blue{
+				color:blue;
+			}
+			.black{
+				color:black;
+			}
+		</style>
+	</head>
+	<body>
+	<div class="list">
+		<p>one</p>
+		<p>two</p>
+		<p>three</p>
+		<p>four</p>
+		<p>five</p>
+		<p>six</p>
+		<p>seven</p>
+		<p>eight</p>
+		<p>nine</p>
+	</div>
+	<button class="an">点击变色</button>
+	<button class="restore">点击还原</button>
+	<p class="arr"></p>
+
+	</body>
+	<script type="text/javascript">
+	var i = 1,
+		j= 2,
+		a=1,
+		b=5,
+		c=a*b
+	document.write( ''+a+'*'+b+' = '+c+'' )
+	console.log(a*b)
+	document.write(' '+a+' * '  +b+' = ' +( a *  b)+'  ')
+	document.write(' '+i+' * '  +j+' = ' + (i * j)+'  ')
+	var list = document.querySelector( '.list').children
+	console.log(list)
+	length = list.length
+	var an = document.querySelector('.an')
+	console.log(an)
+	an.onclick=color
+	function  color(){
+		document.body.style.cssText="background:red;"
+		list[0].classList.add('red')
+	}
+	var restore = document.querySelector('.restore')
+	restore.onclick=remove
+	function remove(){
+		for(var x = 0;x<length;x++){
+		if( x % 2 ){
+			list[x].classList.add('black')
+		}else{
+			list[x].classList.add('black')
+		}
+	}
+	
+	}
+	</script>
+</html>

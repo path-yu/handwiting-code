@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div,body,button{
+            margin:0;
+            padding:0;
+            list-style:none;
+        }
+        body{
+            position: absolute;
+            width:100%;
+        }
+        .container{
+            position: absolute;
+            width:100%;
+            height:800px;
+            background-color: white;
+            z-index:2;
+        }
+        .onalert{
+            display: block;
+            position: relative;
+            margin:  400px auto;
+            padding:0 30px;
+            color: white;
+            border-color:transparent;
+            outline:none;
+            border-radius:20px;
+            background-color: #007bff;
+            cursor:pointer;
+        }
+        .onalert:focus{
+            border:1px solid#FF1268;
+        }
+        .lert{
+            position: relative;
+            top:0px;
+            left:0;
+            right: 0;
+            bottom:0;
+            margin: auto;
+            width: 500px;
+            height: 207px;
+            margin: 100px auto;
+            background-color: white; 
+            border-radius:10px;
+            z-index: 999;
+         }
+         .ptext{
+             height:30px;
+             padding:15px 0 0 15px;
+         }
+         span{
+             padding:15px 0 0 15px;
+             font-size: 20px;
+             font-weight: bold;
+         }
+         .shut{
+             float: right;
+             height:34px;
+             margin:0px 30px 0;
+             font-size: 26px;
+             border:none;
+             opacity: 0.3;
+         }
+         .shut:hover{
+            opacity: 0.6;
+            cursor:pointer;
+         }
+         .mod_body{
+            position: fixed;
+            width:100%;
+            height:100%;
+            background-color: rgba(0, 0, 0, .1);
+            z-index:3;
+         }
+         .infoText{
+             height:30px;
+             font-size:20px;
+             padding:20px 30px;
+            border-top:1px solid #cccccc;
+            border-bottom:1px solid #cccccc;
+
+         }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="onalert">点击弹窗</button>
+    </div>
+</body>
+<script>
+    var  onalert = document.querySelector(`.onalert`),
+         container = document.querySelector(`.container`),
+         mod_body = document.getElementsByClassName('mod_body'),
+         lert  = document.getElementsByClassName('lert'),
+         p  = document.getElementsByClassName('ptext'),
+         span = document.getElementsByTagName('span'),
+         shut = document.getElementsByClassName('shut'),
+         isclick = false,//是否点击了按钮
+         infoText = document.getElementsByClassName('infoText'),
+         text = {title:'hello wolrd',info:'请我我是大帅逼吗',text1:'确定',text2:'取消' };
+    //Alert
+    onalert.onclick= Alert
+    Alert()
+     function Alert(title,info,text1,text2){
+        var fragment = document.createDocumentFragment(),//创建一个文档碎片
+            mod_body = document.createElement('div'),
+            p =  document.createElement('p'),
+            span = document.createElement('span'),
+            shut = document.createElement('button'),
+            body = document.querySelector('body'),
+            infoText =document.createElement('div'),
+            con = document.createElement('div');
+        mod_body.classList.add('mod_body')
+        con.classList.add('lert')
+        shut.classList.add('shut')
+        p.classList.add('ptext')
+        infoText.classList.add('infoText')
+        body.append(mod_body)
+        mod_body.append(con)
+        p.append(span,shut)
+        // mod_body.append(infoText)
+        span.innerText = `hello wolrd`
+        shut.innerText = `×`
+        infoText.innerText = 'info'
+        lert[0].append(p,infoText)
+        // mod_body.style.cssText = `z-index:2;;`
+        lert[0].style.cssText = `transform:translateY(-100px);transition:3s linear;`
+    
+    }
+    document.onclick = function(e){
+        e.stopPropagation()
+    if(isclick == false){
+        return
+    }  
+    lert[0].onclick = function(){
+         mod_body[0].style.cssText = `z-index:2;`
+         console.log('dasd')
+    }
+    }
+   
+    
+    
+    
+    
+</script>
+</html>

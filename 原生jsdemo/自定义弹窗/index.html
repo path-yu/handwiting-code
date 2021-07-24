@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style> 
+        *{
+            margin:0;
+            padding:0;
+            list-style:none;
+        }
+        .container{
+            position: absolute;
+            width:100%;
+            height: 600px;
+            background-color: white;
+        }
+        .onalert{
+            position: relative;
+            display:block;
+            width:100px;
+            margin: 400px auto;
+            padding:10px 10px;
+            background-color: #58a;
+            color:white;
+            border:none;
+            box-shadow:0 0 1px 1px #cccccc ;
+            cursor:pointer;
+            border-radius: 5px;
+            z-index:2;
+        }
+        .box{
+            position: relative;
+            height:800px;
+            background-color: rgba(0, 0, 0, 0);
+            /* ; */
+            z-index:0;
+        }
+        .modal{
+            position: relative;
+            right:0;
+            left:0px;
+            margin:auto;
+            width:500px;
+            height: 204px;
+            background-color: white;
+            border-radius:10px;
+            opacity:0;
+            z-index:-1;
+        }
+        .title{
+            display: flex;
+            justify-content: space-between;
+            padding:10px 10px;
+            font-size:20px;
+            font-weight:bold;
+        }
+        .shut{
+            width:30px;
+            font-size:25px;
+            border: none;
+            opacity: 0.5;
+            background-color: white;
+            cursor: pointer;
+        }
+        .shut:hover{
+            opacity: 0.9;
+        }
+        .info{
+            width:100%;
+            height: 50px;
+            margin-top:20px;
+            text-indent: 10px;
+            line-height: 50px;
+            border-top:1px solid #58a;
+            border-bottom:1px solid #58a;
+            overflow: hidden;
+            user-select: none;
+        }
+        .bt{
+            position:absolute;
+            height:33px;
+            margin-top:20px;
+            padding-right:50px;
+        }
+        .bt > button{
+            position:relative;
+            padding:5px 20px;
+            left:300px;
+            margin:0 5px;
+            border:none;
+            color:white;
+            background-color: #58a;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="onalert">点击弹窗</button>
+    </div>
+<div class="box">
+    <div class="modal">
+        <p class="title">
+            <span >hello wolrd</span>
+            <button class="shut">×</button>
+        </p>
+        <p class="info">请问你喜欢我吗 </p>
+       <div class="bt">
+           <p class="orlike"></p>
+           <button class="text1">关闭</button>
+           <button class="text2">保存更改</button>
+       </div>
+    </div>
+</div>
+</body>
+<script>
+var obj = { title1:'hello im boy',info1:'你喜欢我吗',text11:'喜欢',text22:'不喜欢'  },
+    box = document.querySelector('.box'),
+    title = document.querySelector('.title'),
+    titleText = document.querySelector('.title > span'),
+    info = document.querySelector('.info'),
+    text1 = document.querySelector('.text1'),
+    modal =  document.querySelector('.modal'),
+    onalert = document.querySelector('.onalert'),
+    shut = document.querySelector('.shut'),
+    text2 =  document.querySelector('.text2'),
+    iclick1 = false,//是否点击按钮1
+    iclick2 = false;//是否点击按钮2
+   
+function mod(Title,Info,Text1,Text2){
+    var {title1:a,info1:b,text11:c,text22:d} = obj
+    titleText.innerText = a
+    info.innerText = b
+    text1.innerText = c
+    text2.innerText = d
+    modal.style.cssText = `z-index:2;opacity:1;transition:0.8s linear;`
+    box.style.cssText = ` background-color: rgba(0, 0, 0, 0.1);`
+    text1.onclick = function(){
+        shut.onclick =dlt
+    }
+    text2.onclick = function(){
+        shut.onclick =dlt
+    }
+}
+onalert.onclick = mod
+shut.onclick =dlt
+function dlt(){
+    modal.style.cssText = `z-index:-1; opacity:0;transition:0.5s linear;`
+    box.style.cssText = ` background-color: rgba(0, 0, 0, 0); transition:0.5s linear;`
+}
+confirm()
+</script>
+</html>

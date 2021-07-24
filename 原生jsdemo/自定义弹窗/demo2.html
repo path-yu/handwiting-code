@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>弹窗</title>
+    <style>
+        div,p,button,span{
+            margin:0;
+            padding: 0;
+            list-style: none;
+        }
+        .ck{
+            display: block;
+            padding:8px 10px;
+            margin:400px auto;
+            background-color: #007bff;
+            border:none;
+            border-radius:3px;
+            color: white;
+            cursor:pointer;
+        }
+        .container{
+            position:absolute;
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+            z-index:9999;
+            background-color: rgba(0, 0, 0, 0.2 );
+        }
+        .box{
+            width:500px;
+            padding:10px 0;
+            background-color: white;
+            margin:10px auto;
+            box-shadow: 1px 1px 50px 0 #ccc;
+            border-radius:2px;
+            transition: 1s linear;
+        }
+        .title{
+            display:flex;
+            justify-content: space-between;
+            padding: 10px 10px;
+            font-weight:bold;
+        }
+        .title_cancle{
+            cursor: pointer;
+        }
+    
+        .contentText{
+            padding: 15px 15px;
+            border-top:1px solid #ccc;
+            border-bottom:1px solid #ccc;
+            text-indent: 10px;
+        }
+        .btnBox{
+            padding:10px 10px;
+            text-align: right;
+        }
+        .btnBox > button{
+            padding: 8px 10px;
+            color: white;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .btnOne{
+            background-color: rgb(0,123,255);
+        }
+        .btnTwo{
+            background-color: rgb(108,117,125);
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <button class="ck">点击弹窗</button>
+</body>
+<script>
+    var ck = document.querySelector('.ck');
+    ck.onclick = function(){
+        mod('hello wolrd', '今天是个好日子', '确定', '取消',willDo)
+    }
+    //根据用户点击确定或取消,来确定我们需要做的事
+    function willDo(data){
+        console.log(data)
+    }
+    function mod(Title, text, btn_one, btn_two, callback){
+           //如果选中的是确定把returnValue改为true 否则就是false
+      var returnValue = false
+        //设置一个遮罩层
+        var container  = document.createElement('div'); 
+        container.setAttribute('class', 'container');
+         
+        //模态框内容区域
+        var  box = document.createElement('div'); 
+        box.setAttribute('class', 'box');
+        container.append(box);
+        //模态框title区域
+        var  title = document.createElement('div');
+        title.setAttribute('class','title' );
+        
+        //装文字区域
+        var  title_text = document.createElement('p');
+        title_text.setAttribute('class','title_text' );
+        title_text.innerText = Title;
+        //装x用的
+        var  title_cancle = document.createElement('span');
+        title_cancle.setAttribute('class','title_cancle' );
+        title_cancle.innerText = 'X';
+        title.append(title_text, title_cancle);
+        //文本内容区域
+        var  contentText= document.createElement('p');
+        contentText.setAttribute('class','contentText' );
+        contentText.innerText = text;
+
+        //按钮区域
+        var btnBox = document.createElement('div');
+        btnBox.setAttribute('class','btnBox' );
+        //取消按钮
+        var btnOne = document.createElement('button');
+        btnOne.setAttribute('class','btnOne' );
+        btnOne.innerText = btn_one
+        //确定按钮
+        var btnTwo = document.createElement('button');
+        btnTwo.setAttribute('class','btnTwo' );
+        btnTwo.innerText = btn_two;
+        btnBox.append(btnOne,btnTwo);;
+        //追加标签
+        document.body.append(container);
+        container.append(box);
+        box.append(title,contentText,btnBox);
+
+         //取消函数
+         function cancle(){
+            document.body.removeChild(container)
+            callback(returnValue)
+            return returnValue
+         }
+         title_cancle.onclick = cancle
+         btnTwo.onclick = cancle
+         btnOne.onclick = function(){
+            document.body.removeChild(container)
+            returnValue = true
+            callback(returnValue)
+         }
+      
+    }
+
+
+</script>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script src='./promise.js'></script>
+<script>
+    // function load() {
+        // function init(res,callback){
+        //     callback(res + 10)
+        // }
+        // function redner(res2,callback){
+        //     callback(res2+10)
+        //         }
+        // setTimeout((res) =>{
+        //     init(res,(res2) =>{
+        //         redner(res2,(res3)=>{
+        //             console.log(res3);
+        //         })
+
+        //    })
+    //     // }, 2000, 10);
+
+    //     return new Promise((reslove, reject) => {
+    //         setTimeout((res) => {
+    //             reslove(res)
+    //         }, 2000, 10);
+    //     })
+    // }
+    // load()
+    // .then(res => {
+    //     return res + 10
+    // })
+    // .then(res => {
+    //     return res + 10
+    // })
+    // .then(res =>{
+    //     console.log(res);
+    // })
+    let p = new _Promise((res,rej) =>{
+        // rej('拒绝')
+        res(434)
+    })
+    let pro = new _Promise((res,rej) =>{
+        rej('成功')
+    })
+    
+    _Promise.All([p,pro]).then(values =>{
+       console.log(values);
+    },reason =>{
+        console.log(reason);
+    })
+   
+
+</script>
+
+</html>

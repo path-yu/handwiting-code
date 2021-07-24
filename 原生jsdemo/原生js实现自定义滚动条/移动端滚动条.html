@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div,ul,li{
+            margin:0;
+            padding:0;
+            list-style: none;
+        }
+        .container{
+            position: relative;
+            width: 300px;
+            height: 20px;
+            padding-bottom: 10px;
+            background-color: orange;
+            margin: 200px auto;
+            overflow: hidden;
+            box-shadow: 0 0 10px 0 #58a;
+        }
+        ul{
+            width:600px;
+            display: flex;
+            justify-content: space-between;
+            user-select: none;
+        }
+        .scroll{
+            position: absolute;
+            left:0;
+            right:0;
+            bottom:0;
+            width:300px;
+            height:10px;
+            background-color: #58a;
+            border-radius: 5px;
+        }
+        .scroll_bal{
+            width:50px;
+            height:10px;
+            border-radius: 5px;
+            background-color: red;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <ul class="content">
+            <li>one</li>
+            <li>two</li>
+            <li>three</li>
+            <li>four</li>
+            <li>five</li>
+            <li>six</li>
+            <li>seven</li>
+            <li>eight</li>
+            <li>nine</li>
+            <li>ten</li>
+        </ul>
+        <div class="scroll">
+            <div class="scroll_bal"></div>
+        </div>
+    </div>
+</body>
+<script>
+    var container = document.querySelector('.container'),
+        content = document.querySelector('.content'),//内容区
+        scroll = document.querySelector('.scroll'),//滑道区
+        scroll_bal = document.querySelector('.scroll_bal'),//滑块
+        iclick = false,//滚动条是否被点击
+        posLeft = 0, //内容区移动的距离
+        scroll_left = 0,//滚动条移动的距离
+        moveposition = {x:0},//鼠标点击的水平方向的坐标
+        bar_max = scroll.offsetWidth - scroll_bal.offsetWidth,//滑块移动的最大距离
+        content_max=  content.offsetWidth  -  container.offsetWidth,//内容移动的最大距离
+        ratio = 0//滑块滑动的可滑块距离的百分之多少
+
+    console.log(content_max)
+    scroll_bal.onmousedown = function(e){
+        iclick = true;
+        moveposition.x = e.clientX;//保存点击位置的坐标
+    }
+    document.onmousemove = function(e){
+        if(iclick === false ){ return };
+        scroll_left += e.clientX - moveposition.x;//计算滑块出移动的距离
+        scroll_left = Math.max(Math.min(scroll_left, bar_max),0);//限定滑块移动的距离
+       scroll_bal.style.transform = `translateX(${scroll_left}px)`;
+       moveposition.x = e.clientX;//更新上一次点击的水平方向坐标
+       ratio = scroll_left / bar_max;//计算滑块移动了可移动距离的百分之多少
+       posLet = content_max * ratio;//内容区移动的距离
+       posLet = Math.max(Math.min(posLet, content_max),0);//限定内容区移动的界限
+       content.style.transform = `translateX(${-posLet}px)`;
+    }
+    document.onmouseup = function(){
+        //如果滑块没有被点击就什么都不做
+        if(iclick === false ){ return };
+        iclick = false
+    }
+    //移动端事件
+    container.ontouchstart = function(e){//鼠标触摸开始
+        moveposition.x = e.touches[0].clientX;
+   }
+   document.ontouchmove = function (e){//触摸并滑动
+    posLeft += e.touches[0].clientX -   moveposition.x;
+    posLeft = Math.max(Math.min(posLeft, content_max),0);
+    content.style.transform = `translateX(${-posLeft}px)`;
+    moveposition.x = e.touches[0].clientX;
+   }
+   document.ontouchend  = function(){//触摸结束
+    console.log("鼠标停止触摸")
+   }
+</script>
+</html>

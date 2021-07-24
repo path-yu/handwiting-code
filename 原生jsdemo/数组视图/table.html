@@ -1,0 +1,272 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="keywords" content=" ">
+		<meta name="description" content="">
+		<title>这是一个网页</title>
+		<style >
+		.table{
+			width:600px;
+			margin:0 auto;
+			border:1px solid red;
+			border-collapse:collapse;
+			}
+		tr,td{
+			border:1px solid black;
+			
+		}
+		th{
+			border:1px solid black;
+			color:black;
+		}
+		td{
+			text-align:center;
+		}
+		.box_button{
+			display:flex;
+			justify-content:center;
+			width:600px;
+			margin:10px auto;
+		}
+		.box_button > button{
+			width:120px;
+			margin: 0 5px; 
+			padding:0;
+			border-style:solid;
+			outline-color:black;
+			cursor:pointer;
+		}
+		caption{
+			font-size:20px;
+			padding:5px 0;
+			color:#f596aa;
+		}
+		.container{
+			width:600px;
+			margin:0 auto;
+		}
+		.box{
+			margin:10px auto;
+		}
+		.filter{
+			display:block;
+		}
+		</style>
+	</head>
+	<body>
+		<table class="table">
+			<caption>英雄联盟花名册</caption>
+			<thead>
+				<th>姓名</th>
+				<th>年龄</th>
+				<th>分数</th>
+				<th>特征</th>
+			</thead>
+			<tbody> 
+			</tbody>
+		</table>
+		<div class ="box_button">
+			<button class="big_start">分数从高到低</button>
+			<button class="little_start">分数从底到高</button>
+			<button class="remove">删除不及格的同学</button>
+			<button class="screen">显示排名前5的同学</button>
+		</div>
+		<div class="container">
+			<span>查找排名第</span>
+			<input  class="start" type="number" value="" placeholder="开始值">
+			<span>到</span>
+			<input  class="end" type="number" value="" placeholder="结束值">
+			<span>成绩</span>
+			<button class="search">查询</button>
+		</div>
+		<div class="box container">
+			<span>删除</span>
+			<input  class="grades" type="number" value="" placeholder="分数">
+			<span>分以下的学员</span>
+			<button class="remove_grades">删除</button>
+		</div>
+		<div class ="box_button filter ">
+			<button class="pixie">显示所有的小仙女</button>
+			<input  class = "Name" type="text" value="" placeholder="请输入要查询的姓名">
+			<button class="search_name">搜索</button>
+		</div>
+	</body>
+	<script type="text/javascript">
+	//假如说是这是从后端请求过来的数据,现在我们要把这些数据渲染在页面中
+	//生成数据视图
+	var students = [
+        {name: '盲僧', age: 3, grades: 90, property: '大帅比'},
+		{name: '瑞文', age: 3, grades: 50, property: '大帅比'},
+        {name: '皇子', age: 3, grades: 89, property: '大帅比'},
+        {name: '狼人', age: 3, grades: 88, property: '大帅比'},
+        {name: 'ez', age: 3, grades: 87, property: '大帅比'},
+        {name: '卢锡安', age: 3, grades: 85, property: '大帅比'},
+        {name: '剑圣', age: 3, grades: 86, property: '大帅比'},
+        {name: '泽拉斯', age: 3, grades: 81, property: '大帅比'},
+        {name: '凤女', age: 3, grades: 92, property: '小仙女'},
+        {name: '蛮王', age: 3, grades: 90, property: '大帅比'},
+        {name: '劫', age: 3, grades: 89, property: '大帅比'},
+        {name: '拉克丝', age: 3, grades: 88, property: '小仙女'},
+        {name: '维恩', age: 3, grades: 87, property: '小仙女'},
+		{name: '亚索', age: 3, grades: 59, property: '大帅比'}
+    ]
+	var tbody = document.querySelector('table > tbody')
+	//第一步遍历数组 forEacg ,map(所有forEach能实现的map都能实现)
+	//第二步生成tr td标签,并把每一个对象里的数据填到td标签里面
+	function render(arr){
+		var fragment = document.createDocumentFragment()//创建一个文档碎片
+		//用于储存大量js生成的标签,一次性添加在页面中
+		arr.forEach(function  (item, index, array){
+			var tr = document.createElement('tr')
+			for(var key in item){
+				var td = document.createElement('td')
+				td.innerText = item[key]
+				tr.append(td)
+			}
+			fragment.append(tr)//往文档碎片里面追加需要生成标签的内容
+		})
+		tbody.append(fragment)//往tbody标签里面追加文档碎片里的数据
+	}
+	render(students)
+	//分数从高到低
+	var big_start = document.querySelector('.box_button >.big_start')//获取元素
+	//分数从低到高
+	var little_start = document.querySelector('.box_button > .little_start')
+	big_start.onclick = function(){//绑定点击事件
+		students.sort(function (a, b){
+			return b.grades - a.grades//降序排列
+		})
+		tbody.innerHTML = ''
+		  render(students)
+	}
+	little_start.onclick = function(){
+		students.sort(function (a, b){
+			return a.grades - b.grades//升序排列
+		})
+		tbody.innerHTML = ''//先清空原先的html结构
+		  render(students)//重新调用经过排序后的数组
+	}
+	//删除不及格的同学
+	var remove = document.querySelector('.box_button > .remove')
+	remove.onclick = function (){
+		result = students.findIndex(function (item, index, array){
+			return item.grades  < 60
+		})
+		if(result !== -1){
+			students.splice(result,1)
+			tbody.innerHTML = ''
+			render(students)
+			}
+		/*
+			也可以用filter方过滤数组
+			var result = students.filter(function (item, index, array){
+			return item.grades  <dsdddssdsdt 60
+		})
+		
+		tbody.innerHTML = ''
+		render(result)
+		*/
+	}
+	//显示排名前5的同学
+	var screen =document.querySelector('.box_button > .screen')
+	screen.onclick = function(){
+		var result = students.sort(function (a, b){
+			return b.grades - a.grades
+		})
+		var resule_a = result.slice(0,5)
+		tbody.innerHTML = ''
+		render(resule_a)
+	}
+	//按要求查询排名
+	var search = document.querySelector('.container >  .search'),
+		 start = document.querySelector('.container >  .start'),
+		 end = document.querySelector('.container >  .end')
+	
+	search.onclick = function(){
+		var value1 = start.value,
+			value2 = end.value
+		students.sort(function (a, b){
+			return b.grades - a.grades
+		})
+		console.log(students)
+		if(value1 === '' || value2 ==='' ||value1 * value2 < 0 || Math.abs(value1) > Math.abs(value2)    ){
+				alert('请输入符合规范的值!')
+			
+		}else if(Math.abs(value1) > students.length || Math.abs(value2) > students.length ){
+			alert('请输入符合规范的值!')
+		}
+		else{
+			if(value1 <0 && value2 < 0){
+				var num = Number(value1),
+					num1 = Number(value2),
+					valuea  = num + students.length,
+					valueb  = num1 + students.length,
+					result = students.slice(valueb,valuea+1)
+					resulta = result.reverse()
+				tbody.innerHTML = ''
+				render(resulta)
+			}else {
+				var result = students.slice(value1-1,value2)
+				tbody.innerHTML = ''
+				render(result)
+			}
+		}
+	}
+	//删除分数xx分以下的学员
+	var remove_grades = document.querySelector('.box > .remove_grades'),
+		grades =  document.querySelector('.box > .grades')
+	remove_grades.onclick = function (){
+		var valueone = grades.value
+		if(valueone > 0){
+			var result = students.filter(function (item, index, array){
+			return item.grades >  valueone
+		})
+			if(result.length !== 0){
+				tbody.innerHTML = ''
+				render(result)
+			}else{
+				alert('数据有误,请重新输入!')
+			}
+		}else if(valueone < 0){
+			alert('请输入一个正数')
+		}else{
+			alert('分数不能为空!')
+		}
+	}
+	//筛选出所有的小仙女
+	var pixie = document.querySelector('.box_button > .pixie')
+	pixie.onclick = function(){
+		var result = students.filter(function (item, index, array){
+			return item.property === '小仙女'
+		})
+		tbody.innerHTML = ''
+		render(result)
+	}
+	//搜索姓名为xx的成绩
+	var search_name = document.querySelector('.box_button > .search_name'),
+		Name =  document.querySelector('.box_button > .Name')
+	search_name.onclick = function(){
+		var valuea = Name.value
+		var result = students.filter(function (item, index, array){
+			return item.name ===  valuea
+		})
+		if(valuea !==  ''  )	{
+			if(result.length !== 0){
+				tbody.innerHTML = ''
+				render(result)
+			}else{
+				alert('没有找到你要查找的姓名')
+			}
+		}else{
+			alert('请不要输入空值')
+		}
+	}
+		//charAt(index)传一个下标 返回找到的下标
+	</script>
+	
+	
+
+
+
+</html>

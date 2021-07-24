@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3676076875,1157804804&fm=26&gp=0.jpg"> 
+    <title>弹球</title>
+    <style>
+         body{
+            margin:0;
+            padding:0;
+            background-color: pink;
+        }
+        .circle{
+            position:absolute;
+            width:100px;
+            height:100px;
+            background-color: hotpink;;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="circle" style="top:253px;left:634px;"></div>
+</body>
+<script>
+    var circle = document.querySelector('.circle'),
+    posTop = parseFloat(circle.style.top),//保存小球的top值
+    posLeft = parseFloat(circle.style.left),//保存小球的Left值
+    iclick = false,////判断是否鼠标在小球身上按下 默认false
+    isthrow = true,//判断小球是否做自由落体运动
+    vx = 0,//水平方向的速度
+    vy = 0,//竖直反向的速度
+    mg = 0.6,//重力
+    mouseposition = { x:0, y:0},//保存鼠标按下的坐标
+    availableX = window.innerWidth - circle.offsetWidth,//保存小球水平方向可移动的最大距离
+    availableY = window.innerHeight - circle.offsetHeight;//保存小球垂直方向可移动的最大距离
+//当浏览器可视区域发生改变时更新小球可移动的距离和位置
+console.log(circle.style.top)
+window.onresize = function (){
+    //重新计算出小球可移动的水平方向和垂直方向的距离
+    availableX = window.innerWidth - circle.offsetWidth;
+    availableY = window.innerHeight - circle.offsetHeight;
+    setBoll()//调用小球移动位置的函数
+}
+//一个专门设置小球移动位置的函数
+ function setBoll() {
+    circle.style.top = `${Math.min(Math.max(posTop,0),availableY) }px`;
+    circle.style.left = `${Math.min(Math.max(posLeft,0),availableX)}px`;
+}
+circle.onmousedown = function(e){
+  iclick = true;//表示鼠标在小球身上按下
+  isthrow = false//鼠标按住小球就停止自由落体运动
+  mouseposition = { x:e.clientX, y:e.clientY};//获取鼠标点击位置坐标
+} 
+//鼠标在文档里面滑动
+document.onmousemove = function(e){
+    // //先判断一下是否点击了小球，如果点击了就做事情，如果没有点击就什么都不做
+    if( iclick === false){return };
+    //给小球的top left赋值,每次赋值从上一次赋值的基础上重新赋值
+    posTop += e.clientY - mouseposition.y;
+    posLeft += e.clientX - mouseposition.x;
+    setBoll();
+    vx = e.clientX - mouseposition.x//鼠标滑动时给小球一个水平速度
+    vy = e.clientY - mouseposition.y//竖直速度
+    mouseposition = {x: e.clientX, y: e.clientY};//更新上一次鼠标移动后的x和y坐标 
+}
+//鼠标抬起
+document.onmouseup = function(e){
+    if( iclick === false){return };
+    iclick = false;//鼠标抬起后赋值为false
+    isthrow = true;//鼠标按住小球后抬起,小球开始运动
+}
+//  
+//小球上下跳动
+setInterval(function(){
+    if(!isthrow){ return}//如果还没有扔 就不给他加这个速度
+    //判断小球是否撞到边界,如果撞到边界则小球的速度会递减
+    if( posTop === availableY ) vy *= -0.8
+    if(posTop === 0) vy *= -0.8//小球的能量再递减
+    if( posLeft === availableX )  vx *= -0.8   //反弹
+    if( posLeft === 0 ) vx *= -0.8   //反弹
+    vy += mg//比如说刚开始的速度是一个2
+    posLeft += vx//小球原来的距离+原来的位置
+    posTop += vy//
+    //设定小球水平和方向移动的距离
+    posTop = Math.max( Math.min( posTop, availableY ), 0)
+    //水平方向限定在窗口范围内
+    posLeft = Math.max(Math.min( posLeft,  availableX), 0)
+    setBoll()//调用小球移动位置的函数
+    
+},1000 / 60)
+
+
+
+</script>
+</html>

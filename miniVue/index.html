@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="Zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <h5>{{name}}</h5>
+        <ul>
+            <li>{{person.name}}</li>
+            <li>{{person.age}}</li>
+            <li>3</li>
+        </ul>
+        <p>{{msg}}</p>
+        <p v-text="person.name"></p>
+        <p v-html="htmlStr"></p>
+        <p>{{msg}}</p>
+        <input type="text" v-model="person.name"> 
+        <h1>{{person.name}} </h1>
+        <img v-bind:src="url" alt="">
+        <button v-on:click='handleClick'>点击</button>
+    </div>
+</body>
+<script src="index.js"></script>
+<script>
+    let age = new Vue({
+        el:"#app",
+        methods: {
+            handleClick(ev){
+               this.person.name = '李四'
+               this.htmlStr = '<h2>这是二级标题</h2>'
+            }
+        },
+        data:{
+            person:{
+                name:'张三',
+                age:43,
+            },
+            htmlStr:'<h1>这是一个标题<h1>',
+            url:'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=838592799,3699609601&fm=11&gp=0.jpg',
+            name:'张三',
+            msg:'输入框'
+        }
+    })
+    // vm.msg = "43"
+</script>
+</html>

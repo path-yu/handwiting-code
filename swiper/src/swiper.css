@@ -1,0 +1,101 @@
+html, body, div, ul, li, h1, h2, h3, h4, h5, h6, p, dl, dt, dd, ol, form, input, textarea, th, td, select {
+    margin: 0;
+    padding: 0;
+    list-style:none;
+}
+body{
+    user-select:none;
+    background-color: #ccc;
+}
+.swiper-container{
+    position:relative;
+    width :900px;
+    height:400px;
+    margin: 40px auto;
+    overflow: hidden;
+}
+.swiper-container > .swiper-wrapper{
+    position:absolute;
+    display:flex;
+    
+}
+.swiper-container > .swiper-wrapper > .swiper-slide {
+    color:white;
+    text-align: center;
+    line-height: 300px;
+    font-weight:bold;
+    background:url("./images/bolivia-4919079_1280.jpg");
+}
+.swiper-container > .swiper-wrapper > .swiper-slide:nth-of-type(2){
+    background:url("./images/eurasian-wigeon-4914971_1280.jpg")
+}
+.swiper-container > .swiper-wrapper > .swiper-slide:nth-of-type(3){
+   background:url('./images/laguna-4899802_1280.jpg');
+}
+.swiper-container > .swiper-wrapper > .swiper-slide:nth-of-type(4){
+    background:url('./images/roots-4916080_1280.jpg');
+ }
+/* 加过度效果 */
+.wrapper-transition{
+    transition: 0.4s ease-out;
+}
+/* 按钮样式 */
+.swiper-container > .btn{
+    position:absolute;
+    top:0;
+    bottom:0;
+    width:40px;
+    height:40px;
+    margin: auto 0;
+    line-height:40px;
+    text-align: center;
+    color:white;
+    font-weight:bold;
+    font-size:20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius:50%;
+    cursor: pointer;
+    transition:0.2s linear;
+    opacity: 0.5;
+}
+.swiper-container > .swiper-button-prev{
+    left: 5px;
+}
+.swiper-container > .swiper-button-next{
+    right: 5px;
+}
+/* 按钮调透明度 */
+.opacity{
+   opacity: 0.5;
+}
+.swiper-container:hover > .btn{
+    opacity: 1;
+}
+/* 给分页器加样式 */
+.swiper-container  > .swiper-pagination{
+    position:absolute;
+    bottom:10px;
+    left:0;
+    right:0;
+    text-align: center;
+    font-size:0;
+}
+/* 分页器下面的 子项样式*/
+.swiper-container  > .swiper-pagination > .swiper-pagination-bullet{
+    display:inline-block;
+    width:10px;
+    height:10px;
+    background-color: rgba(0,0, 0,.4);
+    border-radius: 50%;
+    cursor: pointer;
+}
+.swiper-container > .swiper-pagination > .swiper-pagination-bullet + .swiper-pagination-bullet{
+    margin-left: 10px;
+}
+.bullet-bgc{
+    background-color: purple !important;
+}
+/* 弹性盒模型主轴方向 column 数值方向 */
+.flex-direction{
+    flex-direction: column;
+}

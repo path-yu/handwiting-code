@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 引入swiper -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.css">  
+    <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css">    
+    <script src="https://unpkg.com/swiper/js/swiper.js"> </script>  
+    <script src="https://unpkg.com/swiper/js/swiper.min.js"> </script>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .swiper-wrapper > .swiper-slide{
+            height: 300px;
+            line-height: 300px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            background-color: orange;
+            text-align : center;
+        }
+    </style>
+</head>
+<body>
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">slider1</div>
+            <div class="swiper-slide">slider2</div>
+            <div class="swiper-slide">slider3</div>
+        </div>
+    </div>
+</body>
+<script>
+    //.swiper-container 轮播图容器
+    /*
+        第二个参数是配置对象，我们想让轮播图如何去工作
+        autoplay:是否自动轮播
+        他为什么要用构造函数:
+            一个页面可能有很多轮播图
+            什么时候用直接实例化一个就可以了
+    */
+    var mySwiper = new Swiper('.swiper-container', {
+        delay:3000
+    })
+</script>
+</html>

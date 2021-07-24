@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 引入自定义swiper.js -->
+    <script src="./src/swiper.js"></script>
+    <!-- 引入自定义的 swiper.css -->
+   <link rel="stylesheet" href="./src/swiper.css">
+</head>
+<body>
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide"></div>
+            <div class="swiper-slide"></div>
+            <div class="swiper-slide"></div>
+            <div class="swiper-slide"></div>
+        </div>
+        <!-- previous前一个 前进按钮-->
+        <div class="swiper-button-next btn"> &gt; </div>
+        <!-- 后退按钮 -->
+        <div class="swiper-button-prev btn"> &lt; </div>
+        <!-- 分页器 -->
+        <div class="swiper-pagination"></div>
+      </div>
+</body>
+<script>
+    const mySwiper =  new Swiper('.swiper-container',{
+      // bullet_clickable: true,//分页器是否能点击  为true时可以点击, 默认为false
+      autoplay:true,//是否自动轮播
+      timeout:2000,//自动轮播时间(ms)
+      // direction: 'vertical'
+
+    })
+</script>
+</html>
